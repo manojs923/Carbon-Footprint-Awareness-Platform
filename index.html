@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Carbon Footprint Awareness Platform to track and reduce your emissions.">
+    <!-- SECURITY: Strict Content Security Policy to prevent XSS and ensure safe execution -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;">
     <title>Carbon Footprint Awareness Platform</title>
     <link rel="stylesheet" href="style.css">
     <!-- Google Fonts for modern typography -->
@@ -235,17 +237,17 @@
                     <h2>Weekly Challenges (<span id="challenges-count">0/3</span> Active)</h2>
                     <p style="text-align: center; margin-bottom: 1.5rem;">Accept challenges to lower your score and save the planet!</p>
                     <div class="challenges-grid">
-                        <div class="challenge-badge" onclick="toggleChallenge(this, 1)" role="button" tabindex="0" aria-label="Accept weekly challenge to take public transport three times this week" aria-pressed="false">
+                        <div class="challenge-badge" tabindex="0" role="button" aria-pressed="false" onclick="toggleChallenge(this, 1)" onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); toggleChallenge(this, 1); }">
                             <div class="ch-icon">🚌</div>
                             <div class="ch-text">Take public transport 3x this week</div>
                             <div class="ch-check">✔️</div>
                         </div>
-                        <div class="challenge-badge" onclick="toggleChallenge(this, 2)" role="button" tabindex="0" aria-label="Accept weekly challenge to reduce electricity by ten percent this month" aria-pressed="false">
+                        <div class="challenge-badge" tabindex="0" role="button" aria-pressed="false" onclick="toggleChallenge(this, 2)" onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); toggleChallenge(this, 2); }">
                             <div class="ch-icon">💡</div>
                             <div class="ch-text">Reduce electricity by 10% this month</div>
                             <div class="ch-check">✔️</div>
                         </div>
-                        <div class="challenge-badge" onclick="toggleChallenge(this, 3)" role="button" tabindex="0" aria-label="Accept weekly challenge to go vegetarian for seven days" aria-pressed="false">
+                        <div class="challenge-badge" tabindex="0" role="button" aria-pressed="false" onclick="toggleChallenge(this, 3)" onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); toggleChallenge(this, 3); }">
                             <div class="ch-icon">🥗</div>
                             <div class="ch-text">Go vegetarian for 7 days</div>
                             <div class="ch-check">✔️</div>

@@ -816,14 +816,21 @@ if (typeof document !== 'undefined') {
     });
 }
 
+ // --- Weekly Challenges ---
 let activeChallenges = 0;
 if (typeof window !== 'undefined') {
-    window.toggleChallenge = function(element) {
-        const accepted = element.classList.toggle('accepted');
-        activeChallenges += accepted ? 1 : -1;
-        element.setAttribute('aria-pressed', accepted ? 'true' : 'false');
-        document.getElementById('challenges-count').innerText = `${activeChallenges}/3`;
-    };
+window.toggleChallenge = function(element, id) {
+    if (element.classList.contains('accepted')) {
+        element.classList.remove('accepted');
+        element.setAttribute('aria-pressed', 'false');
+        activeChallenges--;
+    } else {
+        element.classList.add('accepted');
+        element.setAttribute('aria-pressed', 'true');
+        activeChallenges++;
+    }
+    document.getElementById('challenges-count').innerText = `${activeChallenges}/3`;
+};    
 
     let chatOpen = false;
     window.toggleAIChat = function() {
