@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Carbon Footprint Awareness Platform to track and reduce your emissions.">
+    <title>Carbon Footprint Awareness Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for dashboard visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <header class="topbar" role="navigation" aria-label="Primary">
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark and light mode">
+            <span id="theme-toggle-icon" aria-hidden="true">SUN</span>
+        </button>
+    </header>
+    <main id="main-content" role="main">
+        <!-- Hero Section -->
+        <section class="hero" aria-labelledby="hero-title">
+            <h1 id="hero-title">Track & Reduce Your Carbon Footprint</h1>
+            <p>Join the movement towards a sustainable future.</p>
+            
+            <div class="glass" style="padding: 2rem; margin-top: 2rem;" aria-live="polite">
+                <h2>Global CO₂ Emitted This Year (Tonnes)</h2>
+                <div id="global-counter" class="global-counter" aria-label="Live counter of global CO2 emissions">
+                    Loading...
+                </div>
+            </div>
+
+            <button id="start-calc-btn" class="btn" style="margin-top: 3rem;" aria-label="Start carbon calculator">
+                Calculate My Footprint
+            </button>
+        </section>
+
+        <div class="container">
+            <!-- Calculator Wizard -->
+            <section id="calculator-section" class="glass" style="padding: 3rem; display: none;" aria-labelledby="calc-title">
+                <h2 id="calc-title">Your Details</h2>
+                
+                <form id="carbon-form">
+                    <!-- Step 1: Energy -->
+                    <div class="calculator-step active" id="step-1">
+                        <h3>Step 1: Energy (Scope 2)</h3>
+                        <div class="form-group">
+                            <label for="electricity">Monthly Electricity Usage (kWh)</label>
+                            <input type="number" id="electricity" name="electricity" min="0" value="0" aria-required="true">
+                            <p class="input-hint">Typical apartment range: 90-250 kWh per month.</p>
+                        </div>
+                        <button type="button" class="btn next-btn" aria-label="Next step">Next</button>
+                    </div>
+
+                    <!-- Step 2: Transport -->
+                    <div class="calculator-step" id="step-2">
+                        <h3>Step 2: Transport (Scope 1 & 3)</h3>
+                        <div class="form-group">
+                            <label for="petrol">Monthly Petrol Usage for Personal Vehicle (Litres)</label>
+                            <input type="number" id="petrol" name="petrol" min="0" value="0" aria-label="Petrol usage in litres">
+                            <p class="input-hint">Typical commuter range: 10-60 litres per month.</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="train">Monthly Train Travel (km)</label>
+                            <input type="number" id="train" name="train" min="0" value="0" aria-label="Train travel in kilometers">
+                            <p class="input-hint">Use your monthly local + intercity train estimate.</p>
+                        </div>
+                        <button type="button" class="btn prev-btn" aria-label="Previous step" style="background:#555; color:#fff;">Back</button>
+                        <button type="button" class="btn next-btn" aria-label="Next step">Next</button>
+                    </div>
+
+                    <!-- Step 3: Food, Shopping & City -->
+                    <div class="calculator-step" id="step-3">
+                        <h3>Step 3: Lifestyle & Location</h3>
+                        <div class="form-group">
+                            <label for="lpg">Monthly LPG Cylinders (approx 14.2kg each)</label>
+                            <input type="number" id="lpg" name="lpg" min="0" step="0.1" value="0" aria-label="LPG usage in cylinders">
+                            <p class="input-hint">Most households use about 0.5-1.0 cylinders per month.</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="diet">Dietary Preference</label>
+                            <select id="diet" name="diet" aria-label="Select diet preference">
+                                <option value="vegan">Vegan (Low CO2)</option>
+                                <option value="vegetarian">Vegetarian (Med CO2)</option>
+                                <option value="omnivore" selected>Omnivore (High CO2)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">Which city are you from?</label>
+                            <select id="city" name="city" aria-label="Select your city">
+                                <option value="Bengaluru">Bengaluru</option>
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Hyderabad">Hyderabad</option>
+                                <option value="Kolkata">Kolkata</option>
+                                <option value="Pune">Pune</option>
+                                <option value="Ahmedabad">Ahmedabad</option>
+                                <option value="Jaipur">Jaipur</option>
+                                <option value="Surat">Surat</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn prev-btn" aria-label="Previous step" style="background:#555; color:#fff;">Back</button>
+                        <button type="submit" class="btn" aria-label="Calculate final results">Show My Dashboard</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Dashboard -->
+            <section id="dashboard-section" style="display: none;" aria-labelledby="dash-title">
+                
+                <!-- HERO: Carbon Credit Score -->
+                <div class="glass dashboard-card hero-score-card" style="margin-bottom: 2rem;">
+                    <h2>Your Carbon Credit Score</h2>
+                    <div class="credit-score" id="credit-score-val">0</div>
+                    <div class="credit-label" id="credit-score-label">Calculating...</div>
+                    <div class="credit-gauge" aria-label="Carbon credit score progress">
+                        <div class="credit-gauge-fill" id="credit-gauge-fill"></div>
+                    </div>
+                    <p>Higher score = lower footprint. Score range: 0 - 850</p>
+                    <div class="score-actions">
+                        <button id="edit-inputs-btn" class="btn secondary-btn" type="button" aria-label="Edit previous calculator inputs">Edit My Inputs</button>
+                        <button id="methodology-toggle" class="btn secondary-btn" type="button" aria-label="Open methodology and sources panel" aria-expanded="false" aria-controls="methodology-panel">Methodology & Sources</button>
+                    </div>
+                    <div id="equivalent-facts" class="equivalent-facts" aria-live="polite">
+                        <div id="equivalent-fact-text" class="equivalent-fact-text">Your impact facts will appear here.</div>
+                    </div>
+                    <div class="share-actions">
+                        <button id="share-score-btn" class="btn" type="button" aria-label="Generate a shareable carbon score card">Share My Score</button>
+                        <button id="download-card-btn" class="btn secondary-btn" type="button" aria-label="Download the generated carbon score card" disabled>Download Card</button>
+                    </div>
+                    <canvas id="share-card-canvas" width="1080" height="1080" aria-label="Shareable carbon score card preview" tabindex="0"></canvas>
+                    <details id="methodology-panel" class="methodology-panel">
+                        <summary>See formulas, factors, and assumptions</summary>
+                        <div class="methodology-grid">
+                            <div>
+                                <h3>Core Formula</h3>
+                                <p>`annual kg CO2 = monthly activity × emission factor × 12`</p>
+                                <p>Credit score uses the India benchmark of 1.9 tonnes/year.</p>
+                            </div>
+                            <div>
+                                <h3>Emission Factors</h3>
+                                <p>Electricity: 0.82 kg CO2/kWh</p>
+                                <p>Petrol: 2.31 kg CO2/litre</p>
+                                <p>LPG: 2.98 kg CO2/kg</p>
+                                <p>Train: 0.041 kg CO2/km</p>
+                            </div>
+                            <div>
+                                <h3>Benchmark Logic</h3>
+                                <p>Scope 1: Petrol + LPG</p>
+                                <p>Scope 2: Electricity</p>
+                                <p>Scope 3: Train + Diet</p>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="grid">
+                    <div class="glass dashboard-card">
+                        <h2 id="dash-title">Your Carbon Profile</h2>
+                        <div class="score-badge" id="total-co2">0.00</div>
+                        <p>Tonnes CO₂e / Year</p>
+                        
+                        <div class="scope-labels">
+                            <span class="scope-label scope-1" aria-label="Scope 1: Direct Emissions">Scope 1 (Direct)</span>
+                            <span class="scope-label scope-2" aria-label="Scope 2: Energy">Scope 2 (Energy)</span>
+                            <span class="scope-label scope-3" aria-label="Scope 3: Indirect">Scope 3 (Indirect)</span>
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="footprintChart" aria-label="Donut chart showing emission breakdown by scope" role="img" tabindex="0"></canvas>
+                        </div>
+                        <div class="chart-actions">
+                            <button class="btn secondary-btn chart-download-btn" type="button" data-chart="footprintChart" aria-label="Download footprint chart image">Download Chart</button>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="breakdown-table" aria-label="Detailed emissions breakdown table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Category</th>
+                                        <th scope="col">Monthly kg</th>
+                                        <th scope="col">Annual kg</th>
+                                        <th scope="col">% of Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="breakdown-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="glass dashboard-card">
+                        <h2>City Leaderboard</h2>
+                        <p>India Average: <strong>1.9 tonnes/year</strong></p>
+                        <div id="comparison-result" style="font-size: 1.1rem; margin: 1rem 0; font-weight: bold;">
+                            Loading comparison...
+                        </div>
+                        <div class="chart-container" style="height: 250px;">
+                            <canvas id="leaderboardChart" aria-label="Bar chart comparing you against your city and country" role="img" tabindex="0"></canvas>
+                        </div>
+                        <div class="chart-actions">
+                            <button class="btn secondary-btn chart-download-btn" type="button" data-chart="leaderboardChart" aria-label="Download city comparison chart image">Download Chart</button>
+                        </div>
+                        <div class="city-insights" id="city-insights" aria-live="polite">
+                            Personalized city insight will appear here after calculation.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass dashboard-card insight-card" style="margin-top: 2rem;">
+                    <h2>Smart Insights</h2>
+                    <p id="hotspot-insight" class="hotspot-insight" aria-live="polite">We will highlight your highest-impact category here.</p>
+                </div>
+
+                <!-- Animated Timeline -->
+                <div class="glass dashboard-card" style="margin-top: 2rem;">
+                    <h2>2030 Emission Trajectory</h2>
+                    <div class="timeline-container">
+                        <div class="timeline-track">
+                            <div class="timeline-fill" id="timeline-fill"></div>
+                            <div class="timeline-marker target-marker" style="left: 100%;">
+                                <div class="marker-label">Paris Target<br>1.5t/yr</div>
+                            </div>
+                            <div class="timeline-marker user-marker" id="user-marker" style="left: 0%;">
+                                <div class="marker-label">Your Path<br><span id="timeline-user-val">0</span>t</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="timeline-msg" style="margin-top: 1.5rem; font-weight: bold;"></p>
+                </div>
+
+                <!-- Weekly Challenges -->
+                <div class="glass dashboard-card" style="margin-top: 2rem; text-align: left;">
+                    <h2>Weekly Challenges (<span id="challenges-count">0/3</span> Active)</h2>
+                    <p style="text-align: center; margin-bottom: 1.5rem;">Accept challenges to lower your score and save the planet!</p>
+                    <div class="challenges-grid">
+                        <div class="challenge-badge" onclick="toggleChallenge(this, 1)" role="button" tabindex="0" aria-label="Accept weekly challenge to take public transport three times this week" aria-pressed="false">
+                            <div class="ch-icon">🚌</div>
+                            <div class="ch-text">Take public transport 3x this week</div>
+                            <div class="ch-check">✔️</div>
+                        </div>
+                        <div class="challenge-badge" onclick="toggleChallenge(this, 2)" role="button" tabindex="0" aria-label="Accept weekly challenge to reduce electricity by ten percent this month" aria-pressed="false">
+                            <div class="ch-icon">💡</div>
+                            <div class="ch-text">Reduce electricity by 10% this month</div>
+                            <div class="ch-check">✔️</div>
+                        </div>
+                        <div class="challenge-badge" onclick="toggleChallenge(this, 3)" role="button" tabindex="0" aria-label="Accept weekly challenge to go vegetarian for seven days" aria-pressed="false">
+                            <div class="ch-icon">🥗</div>
+                            <div class="ch-text">Go vegetarian for 7 days</div>
+                            <div class="ch-check">✔️</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario Simulator -->
+                <div class="glass dashboard-card" style="margin-top: 2rem;">
+                    <h2>Scenario Simulator</h2>
+                        <p>Adjust your habits to see live CO₂ savings!</p>
+                        
+                        <div class="slider-container">
+                            <label for="ev-slider">Switch % of driving to EV</label>
+                            <input type="range" id="ev-slider" min="0" max="100" value="0" aria-label="Switch percentage of driving to electric vehicle" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                            <span id="ev-val">0%</span>
+                        </div>
+                        
+                        <div class="slider-container">
+                            <label for="solar-slider">Go Solar (% of home energy)</label>
+                            <input type="range" id="solar-slider" min="0" max="100" value="0" aria-label="Switch percentage of home energy to solar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                            <span id="solar-val">0%</span>
+                        </div>
+
+                        <div class="scenario-result">
+                            Projected New Total: <span id="projected-total">0.00</span> tonnes
+                        </div>
+
+                        <button onclick="window.print()" class="btn" style="margin-top: 2rem; width: 100%;" aria-label="Print or save as PDF">
+                            Generate PDF Report
+                        </button>
+                </div>
+                <div class="glass dashboard-card history-card" style="margin-top: 2rem;">
+                    <h2>My History</h2>
+                    <p id="history-trend" class="history-trend" aria-live="polite">Complete multiple calculations to track your trend over time.</p>
+                    <div class="chart-container" style="height: 260px;">
+                        <canvas id="historyChart" aria-label="Line chart showing your carbon footprint history over time" role="img" tabindex="0"></canvas>
+                    </div>
+                    <div class="chart-actions">
+                        <button class="btn secondary-btn chart-download-btn" type="button" data-chart="historyChart" aria-label="Download history chart image">Download Chart</button>
+                        <button id="export-history-btn" class="btn secondary-btn" type="button" aria-label="Download calculation history as CSV">Export History CSV</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- AI Carbon Coach Widget -->
+        <div class="ai-widget" id="ai-widget">
+            <div class="ai-header" onclick="toggleAIChat()" role="button" tabindex="0" aria-label="Toggle AI carbon coach chat">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5rem;">🤖</span>
+                    <strong>AI Carbon Coach</strong>
+                </div>
+                <span id="ai-toggle-icon">^</span>
+            </div>
+            <div class="ai-body" id="ai-body" style="display: none;">
+                <div class="ai-chat-window" id="ai-chat-window">
+                    <div class="ai-msg bot">Hi! I'm your AI Carbon Coach. Calculate your footprint, then ask me how to improve your score!</div>
+                </div>
+                <div class="ai-input-area">
+                    <input type="text" id="ai-user-input" placeholder="How do I reduce my score?" class="ai-input" aria-label="Ask the AI carbon coach a question" onkeypress="if(event.key === 'Enter') sendAIMessage()">
+                    <button onclick="sendAIMessage()" class="ai-send-btn" aria-label="Send chat message">Send</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
