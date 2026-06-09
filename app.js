@@ -367,14 +367,22 @@ if (typeof document !== 'undefined') {
             const storedTheme = getStorage()?.getItem(THEME_STORAGE_KEY) || 'dark';
             const isLight = storedTheme === 'light';
             document.body.classList.toggle('light-mode', isLight);
-            themeIcon.innerText = isLight ? 'MOON' : 'SUN';
+            const themeBtn = document.getElementById('theme-toggle');
+            if (themeBtn) {
+                themeBtn.innerHTML = `<i data-lucide="${isLight ? 'moon' : 'sun'}" id="theme-toggle-icon"></i>`;
+                refreshIcons();
+            }
         }
 
         function toggleTheme() {
             const isLightMode = document.body.classList.toggle('light-mode');
             const nextTheme = isLightMode ? 'light' : 'dark';
             getStorage()?.setItem(THEME_STORAGE_KEY, nextTheme);
-            themeIcon.innerText = isLightMode ? 'MOON' : 'SUN';
+            const themeBtn = document.getElementById('theme-toggle');
+            if (themeBtn) {
+                themeBtn.innerHTML = `<i data-lucide="${isLightMode ? 'moon' : 'sun'}" id="theme-toggle-icon"></i>`;
+                refreshIcons();
+            }
             if (baseFootprint.total > 0) {
                 updateDashboard(baseFootprint);
             } else {
@@ -452,6 +460,11 @@ if (typeof document !== 'undefined') {
             
             const shareLinks = document.getElementById('social-share-links');
             if (shareLinks) shareLinks.style.display = 'none';
+
+            // Auto-generate card on calculate
+            if (data && data.total > 0) {
+                generateShareCard(data);
+            }
 
             if (latestCardUrl) {
                 URL.revokeObjectURL(latestCardUrl);
@@ -783,7 +796,7 @@ if (typeof document !== 'undefined') {
 
             ctx.fillStyle = '#d0fbd0';
             ctx.font = '700 56px Inter';
-            ctx.fillText(tier.label, 130, 520);
+            ctx.fillText(tier.name, 130, 520);
 
             ctx.fillStyle = '#0c180c';
             ctx.fillRect(130, 580, 820, 240);
@@ -805,6 +818,9 @@ if (typeof document !== 'undefined') {
             downloadCardBtn.disabled = false;
             const shareLinks = document.getElementById('social-share-links');
             if (shareLinks) shareLinks.style.display = 'flex';
+            
+            // Re-render icons on the page just in case
+            refreshIcons();
         }
 
         function downloadShareCard() {
