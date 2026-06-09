@@ -253,6 +253,8 @@ if (typeof document !== 'undefined') {
         applyStoredTheme();
         initializeKeyboardAccessibility();
         renderHistorySection(getFootprintHistory());
+        loadSavedInputs();
+        loadAchievements();
         window.baseFootprint = baseFootprint;
 
         startBtn.addEventListener('click', () => {
@@ -311,11 +313,14 @@ if (typeof document !== 'undefined') {
                 breakdown,
                 history
             };
+            
+            getStorage()?.setItem('ecotrack-inputs', JSON.stringify(inputs));
             window.baseFootprint = baseFootprint;
 
             calcSec.style.display = 'none';
             dashSec.style.display = 'block';
             updateDashboard(baseFootprint);
+            checkAchievements();
         });
 
         methodologyToggle.addEventListener('click', () => {
@@ -946,6 +951,81 @@ window.toggleChallenge = function(element, id) {
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
+    // --- Persistence ---
+    function loadSavedInputs() {
+        try {
+            const saved = getStorage()?.getItem('ecotrack-inputs');
+            if (saved) {
+                const inputs = JSON.parse(saved);
+                if (document.getElementById('state')) document.getElementById('state').value = inputs.state || 'National';
+                document.getElementById('electricity').value = inputs.electricity || 0;
+                document.getElementById('petrol').value = inputs.petrol || 0;
+                document.getElementById('train').value = inputs.train || 0;
+                document.getElementById('lpg').value = inputs.lpgCylinders || 0;
+                document.getElementById('diet').value = inputs.diet || 'omnivore';
+                document.getElementById('city').value = inputs.city || 'Bengaluru';
+            }
+        } catch(e) {}
+    }
+
+    // --- Gamification ---
+    let unlockedBadges = [];
+
+    function loadAchievements() {
+        try {
+            const saved = getStorage()?.getItem('ecotrack-achievements');
+            if (saved) {
+                unlockedBadges = JSON.parse(saved);
+                unlockedBadges.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.classList.remove('locked');
+                        el.classList.add('unlocked');
+                    }
+                });
+            }
+        } catch(e) {}
+    }
+
+    function unlockBadge(id, title) {
+        if (!unlockedBadges.includes(id)) {
+            unlockedBadges.push(id);
+            getStorage()?.setItem('ecotrack-achievements', JSON.stringify(unlockedBadges));
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove('locked');
+                el.classList.add('unlocked');
+            }
+            showToast(`Achievement Unlocked: ${title}!`, 'award');
+        }
+    }
+
+    window.checkAchievements = function() {
+        const fp = window.baseFootprint;
+        if (!fp || fp.total === 0) return;
+        
+        if (fp.score > 600) {
+            unlockBadge('badge-eco-hero', 'Eco Hero (>600 Score)');
+        }
+        if (fp.inputs && fp.inputs.state && fp.inputs.state !== 'National') {
+            unlockBadge('badge-state-expert', 'State Grid Expert');
+        }
+    };
+
+    window.showToast = function(message, iconName = 'bell') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `<i data-lucide="${iconName}"></i> <span>${message}</span>`;
+        container.appendChild(toast);
+        if (typeof lucide !== 'undefined') lucide.createIcons({root: toast});
+        
+        setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 3600);
+    };
+
     window.addDailyLog = function() {
         const typeEl = document.getElementById('daily-type');
         const valEl = document.getElementById('daily-val');
@@ -995,7 +1075,9 @@ window.toggleChallenge = function(element, id) {
                 scoreGaugeFill.style.stroke = getComputedStyle(scoreEl).color;
             }
 
-            alert(`Logged ${val} ${typeEl.value}. Added ${addedKg.toFixed(2)} kg CO2 to your total footprint.`);
+            unlockBadge('badge-first-log', 'First Log');
+            window.checkAchievements();
+            window.showToast(`Logged ${val} ${typeEl.value}. Added ${addedKg.toFixed(2)} kg CO2 to footprint.`, 'check-circle');
         } else {
             alert('Please calculate your base footprint first!');
         }

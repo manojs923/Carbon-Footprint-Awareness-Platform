@@ -7,14 +7,23 @@
     <!-- SECURITY: Strict Content Security Policy to prevent XSS and ensure safe execution -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:;">
     <title>Carbon Footprint Awareness Platform</title>
+    <meta name="description" content="Calculate, track, and reduce your carbon footprint with actionable AI insights.">
+    <meta name="theme-color" content="#39ff14">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts for modern typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Chart.js for dashboard visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest" defer></script>
     <script src="app.js" defer></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed: ', err));
+            });
+        }
+    </script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -192,6 +201,25 @@
                     </div>
                 </div>
 
+                <!-- Gamification Achievements -->
+                <div class="glass dashboard-card animate-fade-in" style="margin-bottom: 2rem; border-color: rgba(255, 165, 2, 0.5);">
+                    <h2><i data-lucide="award" style="vertical-align: middle; color: #ffa502;"></i> Your Achievements</h2>
+                    <div id="achievements-container" class="achievements-grid" style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+                        <div class="achievement-badge locked" id="badge-first-log" aria-label="First Log Achievement">
+                            <i data-lucide="book-open"></i>
+                            <span>First Log</span>
+                        </div>
+                        <div class="achievement-badge locked" id="badge-eco-hero" aria-label="Eco Hero Achievement">
+                            <i data-lucide="shield-check"></i>
+                            <span>Eco Hero (>600)</span>
+                        </div>
+                        <div class="achievement-badge locked" id="badge-state-expert" aria-label="State Expert Achievement">
+                            <i data-lucide="map-pin"></i>
+                            <span>State Expert</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid">
                     <div class="glass dashboard-card animate-fade-in" style="animation-delay: 0.1s;">
                         <h2 id="dash-title">Your Carbon Profile</h2>
@@ -346,6 +374,20 @@
                 </div>
             </div>
         </div>
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container" aria-live="assertive" role="alert"></div>
+
     </main>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                .then(registration => console.log('SW Registered:', registration.scope))
+                .catch(err => console.error('SW Registration Failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>

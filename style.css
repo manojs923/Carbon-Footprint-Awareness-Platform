@@ -714,6 +714,76 @@ body.light-mode .challenge-badge {
   transform: scale(1);
 }
 
+/* Achievements & Badges */
+.achievement-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 165, 2, 0.15);
+    border: 1px solid rgba(255, 165, 2, 0.4);
+    border-radius: 12px;
+    color: #ffa502;
+    transition: var(--transition);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.achievement-badge.locked {
+    opacity: 0.4;
+    filter: grayscale(100%);
+    border-color: rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.2);
+    color: var(--muted-text);
+}
+
+.achievement-badge.unlocked {
+    box-shadow: 0 0 15px rgba(255, 165, 2, 0.2);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.toast {
+    background: linear-gradient(135deg, #ffa502 0%, #ff7f50 100%);
+    color: #111;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideUp 0.3s ease, fadeOut 0.5s ease 3s forwards;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+@keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; margin-top: -50px; }
+}
+
 .slider-container {
   margin-bottom: 2rem;
 }
