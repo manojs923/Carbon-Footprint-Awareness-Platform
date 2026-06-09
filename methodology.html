@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Methodology & Sources - EcoTrack India</title>
+    <meta name="description" content="View the scientific formulas, data sources, and state-wise grid factors used in EcoTrack India.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            const storedTheme = localStorage.getItem('ecotrack-theme') || 'dark';
+            const isLight = storedTheme === 'light';
+            document.body.classList.toggle('light-mode', isLight);
+            const themeIcon = document.getElementById('theme-toggle-icon');
+            if (themeIcon) themeIcon.setAttribute('data-lucide', isLight ? 'moon' : 'sun');
+            
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    const isLightMode = document.body.classList.toggle('light-mode');
+                    localStorage.setItem('ecotrack-theme', isLightMode ? 'light' : 'dark');
+                    themeIcon.setAttribute('data-lucide', isLightMode ? 'moon' : 'sun');
+                    lucide.createIcons();
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <header class="topbar">
+        <div style="flex-grow: 1;">
+            <a href="index.html" class="nav-link" style="color: var(--text-color); margin-right: 20px; font-weight: 600; text-decoration: none;">
+                <i data-lucide="arrow-left" style="width: 18px; vertical-align: middle; margin-right: 4px;"></i> Back to Calculator
+            </a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark and light mode">
+            <i data-lucide="sun" id="theme-toggle-icon"></i>
+        </button>
+    </header>
+
+    <main class="container" style="max-width: 800px; padding-top: 2rem; padding-bottom: 4rem;">
+        <h1 style="text-align: center; margin-bottom: 0.5rem;">Methodology & Sources</h1>
+        <p style="text-align: center; margin-bottom: 3rem;">How we calculate your environmental footprint.</p>
+
+        <div class="glass" style="padding: 2.5rem; margin-bottom: 2rem;">
+            <h2><i data-lucide="function-square" style="vertical-align: bottom; margin-right: 8px;"></i>Core Formula</h2>
+            <p>Our calculation engine uses a standardized approach based on the GHG Protocol.</p>
+            <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; font-family: monospace; color: var(--accent-color); margin-bottom: 1.5rem; overflow-x: auto;">Annual kg CO2e = (Monthly Activity Data) × (Emission Factor) × 12</pre>
+            <p>To convert to tonnes, the result is divided by 1,000.</p>
+        </div>
+
+        <div class="glass" style="padding: 2.5rem; margin-bottom: 2rem;">
+            <h2><i data-lucide="zap" style="vertical-align: bottom; margin-right: 8px;"></i>State-wise Grid Electricity (Scope 2)</h2>
+            <p>Unlike global calculators, we use real state-wise grid emission factors from the <strong>Central Electricity Authority (CEA) of India - CO2 Baseline Database (Version 18)</strong>.</p>
+            
+            <table class="breakdown-table" style="margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>State / Region</th>
+                        <th>Emission Factor (kg CO2e / kWh)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>National Average</td><td>0.82</td></tr>
+                    <tr><td>Delhi</td><td>0.97</td></tr>
+                    <tr><td>Tamil Nadu</td><td>0.84</td></tr>
+                    <tr><td>Gujarat</td><td>0.78</td></tr>
+                    <tr><td>Maharashtra</td><td>0.72</td></tr>
+                    <tr><td>Karnataka</td><td>0.62</td></tr>
+                </tbody>
+            </table>
+            <p class="input-hint" style="margin-top: 1rem;">* States heavily reliant on coal (like Delhi) have a higher factor than states with higher renewable penetration (like Karnataka).</p>
+        </div>
+
+        <div class="glass" style="padding: 2.5rem; margin-bottom: 2rem;">
+            <h2><i data-lucide="car" style="vertical-align: bottom; margin-right: 8px;"></i>Transport & Fuel (Scope 1 & 3)</h2>
+            <p>Emission factors for direct fuel consumption and public transit are sourced from the <strong>India GHG Program</strong> and the <strong>Ministry of Environment, Forest and Climate Change (MoEFCC)</strong>.</p>
+            <ul style="margin-left: 1.5rem; margin-top: 1rem; color: var(--muted-text); line-height: 1.8;">
+                <li><strong>Petrol:</strong> 2.31 kg CO2e / Litre</li>
+                <li><strong>LPG (Domestic):</strong> 2.98 kg CO2e / kg (approx. 42.3 kg per 14.2kg cylinder)</li>
+                <li><strong>Train Travel:</strong> 0.041 kg CO2e / Passenger-km</li>
+            </ul>
+        </div>
+
+        <div class="glass" style="padding: 2.5rem; margin-bottom: 2rem;">
+            <h2><i data-lucide="award" style="vertical-align: bottom; margin-right: 8px;"></i>The Carbon Credit Score (0 - 850)</h2>
+            <p>Your Carbon Credit Score is uniquely derived from the World Bank data for India's per-capita emissions.</p>
+            <ul style="margin-left: 1.5rem; margin-top: 1rem; color: var(--muted-text); line-height: 1.8;">
+                <li><strong>India Per Capita Average:</strong> 1.9 Tonnes CO2e / Year</li>
+                <li><strong>Score Formula:</strong> <code>Score = 850 - ((User_Tonnes / 1.9) * 425)</code></li>
+                <li><strong>Meaning:</strong> Emitting exactly 1.9 tonnes yields a score of 425. Emitting 0 tonnes yields a perfect 850.</li>
+            </ul>
+        </div>
+    </main>
+</body>
+</html>

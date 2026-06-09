@@ -12,31 +12,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Chart.js for dashboard visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest" defer></script>
     <script src="app.js" defer></script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <header class="topbar" role="navigation" aria-label="Primary">
+        <div style="flex-grow: 1;">
+            <a href="methodology.html" class="nav-link" style="color: var(--text-color); margin-right: 20px; font-weight: 600; text-decoration: none;">Methodology</a>
+        </div>
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark and light mode">
-            <span id="theme-toggle-icon" aria-hidden="true">SUN</span>
+            <i data-lucide="sun" id="theme-toggle-icon"></i>
         </button>
     </header>
     <main id="main-content" role="main">
-        <!-- Hero Section -->
-        <section class="hero" aria-labelledby="hero-title">
-            <h1 id="hero-title">Track & Reduce Your Carbon Footprint</h1>
-            <p>Join the movement towards a sustainable future.</p>
+        <!-- Hero Section & Landing Page -->
+        <section class="hero" aria-labelledby="hero-title" id="landing-hero">
+            <div class="hero-content">
+                <span class="pill-badge"><i data-lucide="zap" style="width:14px;"></i> Personal carbon intelligence</span>
+                <h1 id="hero-title">Understand your footprint.<br>Then shrink it.</h1>
+                <p>Carbon turns your everyday choices into a clear, measured picture — and gives you specific, data-grounded ways to do better.</p>
+                <button id="start-calc-btn" class="btn hero-btn" aria-label="Start carbon calculator">
+                    Start tracking <i data-lucide="arrow-right"></i>
+                </button>
+            </div>
             
-            <div class="glass" style="padding: 2rem; margin-top: 2rem;" aria-live="polite">
-                <h2>Global CO₂ Emitted This Year (Tonnes)</h2>
-                <div id="global-counter" class="global-counter" aria-label="Live counter of global CO2 emissions">
-                    Loading...
+            <div class="features-grid">
+                <div class="feature-card glass">
+                    <i data-lucide="car" class="feature-icon"></i>
+                    <h3>Transport</h3>
+                    <p>Cars, transit, flights, cycling</p>
+                </div>
+                <div class="feature-card glass">
+                    <i data-lucide="zap" class="feature-icon"></i>
+                    <h3>Home Energy</h3>
+                    <p>Electricity and heating</p>
+                </div>
+                <div class="feature-card glass">
+                    <i data-lucide="salad" class="feature-icon"></i>
+                    <h3>Diet</h3>
+                    <p>From red meat to plant-based</p>
                 </div>
             </div>
-
-            <button id="start-calc-btn" class="btn" style="margin-top: 3rem;" aria-label="Start carbon calculator">
-                Calculate My Footprint
-            </button>
         </section>
 
         <div class="container">
@@ -48,6 +66,18 @@
                     <!-- Step 1: Energy -->
                     <div class="calculator-step active" id="step-1">
                         <h3>Step 1: Energy (Scope 2)</h3>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <select id="state" name="state" aria-label="Select your state for grid emission factor">
+                                <option value="National">National Average</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="TamilNadu">Tamil Nadu</option>
+                            </select>
+                            <p class="input-hint">Used for state-specific grid emission calculations.</p>
+                        </div>
                         <div class="form-group">
                             <label for="electricity">Monthly Electricity Usage (kWh)</label>
                             <input type="number" id="electricity" name="electricity" min="0" value="0" aria-required="true">
@@ -114,53 +144,56 @@
             <section id="dashboard-section" style="display: none;" aria-labelledby="dash-title">
                 
                 <!-- HERO: Carbon Credit Score -->
-                <div class="glass dashboard-card hero-score-card" style="margin-bottom: 2rem;">
+                <div class="glass dashboard-card hero-score-card animate-fade-in" style="margin-bottom: 2rem;">
                     <h2>Your Carbon Credit Score</h2>
-                    <div class="credit-score" id="credit-score-val">0</div>
-                    <div class="credit-label" id="credit-score-label">Calculating...</div>
-                    <div class="credit-gauge" aria-label="Carbon credit score progress">
-                        <div class="credit-gauge-fill" id="credit-gauge-fill"></div>
+                    
+                    <div class="gauge-container">
+                        <svg class="circular-gauge" viewBox="0 0 100 100">
+                            <path class="gauge-bg" d="M 20 80 A 45 45 0 1 1 80 80" fill="none" stroke-width="10" stroke-linecap="round"></path>
+                            <path class="gauge-fill" id="credit-gauge-svg" d="M 20 80 A 45 45 0 1 1 80 80" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="210" stroke-dashoffset="210"></path>
+                        </svg>
+                        <div class="gauge-content">
+                            <div class="credit-score" id="credit-score-val">0</div>
+                        </div>
                     </div>
+                    
+                    <div class="credit-label" id="credit-score-label">Calculating...</div>
                     <p>Higher score = lower footprint. Score range: 0 - 850</p>
                     <div class="score-actions">
-                        <button id="edit-inputs-btn" class="btn secondary-btn" type="button" aria-label="Edit previous calculator inputs">Edit My Inputs</button>
-                        <button id="methodology-toggle" class="btn secondary-btn" type="button" aria-label="Open methodology and sources panel" aria-expanded="false" aria-controls="methodology-panel">Methodology & Sources</button>
+                        <button id="edit-inputs-btn" class="btn secondary-btn" type="button" aria-label="Edit previous calculator inputs"><i data-lucide="edit-2"></i> Edit Inputs</button>
+                        <a href="methodology.html" class="btn secondary-btn" aria-label="View methodology"><i data-lucide="book-open"></i> Methodology</a>
                     </div>
                     <div id="equivalent-facts" class="equivalent-facts" aria-live="polite">
                         <div id="equivalent-fact-text" class="equivalent-fact-text">Your impact facts will appear here.</div>
                     </div>
                     <div class="share-actions">
-                        <button id="share-score-btn" class="btn" type="button" aria-label="Generate a shareable carbon score card">Share My Score</button>
-                        <button id="download-card-btn" class="btn secondary-btn" type="button" aria-label="Download the generated carbon score card" disabled>Download Card</button>
+                        <button id="share-score-btn" class="btn" type="button" aria-label="Generate a shareable carbon score card"><i data-lucide="image"></i> Generate Card</button>
+                        <button id="download-card-btn" class="btn secondary-btn" type="button" aria-label="Download the generated carbon score card" disabled><i data-lucide="download"></i> Download</button>
+                    </div>
+                    <div class="social-share" id="social-share-links" style="display:none; margin-top: 1rem; gap: 1rem; justify-content: center;">
+                        <button class="btn secondary-btn" onclick="shareToWhatsApp()"><i data-lucide="message-circle"></i> WhatsApp</button>
+                        <button class="btn secondary-btn" onclick="shareToTwitter()"><i data-lucide="twitter"></i> Twitter</button>
                     </div>
                     <canvas id="share-card-canvas" width="1080" height="1080" aria-label="Shareable carbon score card preview" tabindex="0"></canvas>
-                    <details id="methodology-panel" class="methodology-panel">
-                        <summary>See formulas, factors, and assumptions</summary>
-                        <div class="methodology-grid">
-                            <div>
-                                <h3>Core Formula</h3>
-                                <p>`annual kg CO2 = monthly activity × emission factor × 12`</p>
-                                <p>Credit score uses the India benchmark of 1.9 tonnes/year.</p>
-                            </div>
-                            <div>
-                                <h3>Emission Factors</h3>
-                                <p>Electricity: 0.82 kg CO2/kWh</p>
-                                <p>Petrol: 2.31 kg CO2/litre</p>
-                                <p>LPG: 2.98 kg CO2/kg</p>
-                                <p>Train: 0.041 kg CO2/km</p>
-                            </div>
-                            <div>
-                                <h3>Benchmark Logic</h3>
-                                <p>Scope 1: Petrol + LPG</p>
-                                <p>Scope 2: Electricity</p>
-                                <p>Scope 3: Train + Diet</p>
-                            </div>
-                        </div>
-                    </details>
+                </div>
+
+                <!-- Daily Log Section -->
+                <div class="glass dashboard-card animate-fade-in" style="margin-bottom: 2rem; background: rgba(57, 255, 20, 0.05);">
+                    <h2><i data-lucide="plus-circle" style="vertical-align: middle;"></i> Daily Action Log</h2>
+                    <p>Log today's activities to update your footprint live.</p>
+                    <div class="daily-log-form" style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+                        <select id="daily-type" class="ai-input" style="width: auto;">
+                            <option value="train">Train Travel (km)</option>
+                            <option value="petrol">Petrol Driven (Litres)</option>
+                            <option value="electricity">Electricity (kWh)</option>
+                        </select>
+                        <input type="number" id="daily-val" class="ai-input" placeholder="Amount" style="width: 120px;" min="0">
+                        <button onclick="addDailyLog()" class="btn"><i data-lucide="plus"></i> Add</button>
+                    </div>
                 </div>
 
                 <div class="grid">
-                    <div class="glass dashboard-card">
+                    <div class="glass dashboard-card animate-fade-in" style="animation-delay: 0.1s;">
                         <h2 id="dash-title">Your Carbon Profile</h2>
                         <div class="score-badge" id="total-co2">0.00</div>
                         <p>Tonnes CO₂e / Year</p>
@@ -238,19 +271,19 @@
                     <p style="text-align: center; margin-bottom: 1.5rem;">Accept challenges to lower your score and save the planet!</p>
                     <div class="challenges-grid">
                         <div class="challenge-badge" tabindex="0" role="button" aria-pressed="false" onclick="toggleChallenge(this, 1)" onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); toggleChallenge(this, 1); }">
-                            <div class="ch-icon">🚌</div>
+                            <div class="ch-icon"><i data-lucide="bus"></i></div>
                             <div class="ch-text">Take public transport 3x this week</div>
-                            <div class="ch-check">✔️</div>
+                            <div class="ch-check"><i data-lucide="check-circle-2"></i></div>
                         </div>
                         <div class="challenge-badge" tabindex="0" role="button" aria-pressed="false" onclick="toggleChallenge(this, 2)" onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); toggleChallenge(this, 2); }">
-                            <div class="ch-icon">💡</div>
+                            <div class="ch-icon"><i data-lucide="zap"></i></div>
                             <div class="ch-text">Reduce electricity by 10% this month</div>
-                            <div class="ch-check">✔️</div>
+                            <div class="ch-check"><i data-lucide="check-circle-2"></i></div>
                         </div>
                         <div class="challenge-badge" tabindex="0" role="button" aria-pressed="false" onclick="toggleChallenge(this, 3)" onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); toggleChallenge(this, 3); }">
-                            <div class="ch-icon">🥗</div>
+                            <div class="ch-icon"><i data-lucide="salad"></i></div>
                             <div class="ch-text">Go vegetarian for 7 days</div>
-                            <div class="ch-check">✔️</div>
+                            <div class="ch-check"><i data-lucide="check-circle-2"></i></div>
                         </div>
                     </div>
                 </div>
@@ -298,10 +331,10 @@
         <div class="ai-widget" id="ai-widget">
             <div class="ai-header" onclick="toggleAIChat()" role="button" tabindex="0" aria-label="Toggle AI carbon coach chat">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 1.5rem;">🤖</span>
+                    <i data-lucide="bot"></i>
                     <strong>AI Carbon Coach</strong>
                 </div>
-                <span id="ai-toggle-icon">^</span>
+                <i data-lucide="chevron-up" id="ai-toggle-icon"></i>
             </div>
             <div class="ai-body" id="ai-body" style="display: none;">
                 <div class="ai-chat-window" id="ai-chat-window">

@@ -8,7 +8,14 @@ const TREE_OFFSET_KG = 21.7;
 const AVG_KM_PER_LITRE = 15;
 
 const EF = {
-    electricity: 0.82,
+    electricity: {
+        National: 0.82,
+        Delhi: 0.97,
+        Karnataka: 0.62,
+        Maharashtra: 0.72,
+        Gujarat: 0.78,
+        TamilNadu: 0.84
+    },
     petrol: 2.31,
     train: 0.041,
     lpg: 2.98,
@@ -77,15 +84,15 @@ function getCityTip(city, totalTonnes) {
 
 function getHotspotInsight(breakdown) {
     const categories = [
-        { key: 'electricity', label: 'Electricity', annual: breakdown.annualKg.electricity },
-        { key: 'petrol', label: 'Petrol vehicle', annual: breakdown.annualKg.petrol },
-        { key: 'train', label: 'Train travel', annual: breakdown.annualKg.train },
-        { key: 'lpg', label: 'LPG cooking', annual: breakdown.annualKg.lpg },
-        { key: 'diet', label: 'Diet', annual: breakdown.annualKg.diet }
+        { key: 'electricity', label: 'Electricity', annual: breakdown.annualKg.electricity, savingsTip: (val) => `Switching to solar could save ${(val*0.8/1000).toFixed(1)} tonnes/yr` },
+        { key: 'petrol', label: 'Petrol vehicle', annual: breakdown.annualKg.petrol, savingsTip: (val) => `Switching to an EV saves ${(val*0.5/1000).toFixed(1)} tonnes/yr` },
+        { key: 'train', label: 'Train travel', annual: breakdown.annualKg.train, savingsTip: (val) => `Reducing trips could save ${(val*0.2/1000).toFixed(1)} tonnes/yr` },
+        { key: 'lpg', label: 'LPG cooking', annual: breakdown.annualKg.lpg, savingsTip: (val) => `Switching to induction cooking saves ${(val*0.4/1000).toFixed(1)} tonnes/yr` },
+        { key: 'diet', label: 'Diet', annual: breakdown.annualKg.diet, savingsTip: (val) => `Shifting to a plant-based diet saves ${(val*0.3/1000).toFixed(1)} tonnes/yr` }
     ];
     const top = categories.sort((a, b) => b.annual - a.annual)[0];
     const pct = breakdown.totalAnnualKg === 0 ? 0 : (top.annual / breakdown.totalAnnualKg) * 100;
-    return `${top.label} is your biggest driver at ${top.annual.toFixed(1)} kg/year, contributing ${pct.toFixed(1)}% of your footprint. That is your highest-impact reduction lever.`;
+    return `${top.label} is your biggest driver at ${top.annual.toFixed(1)} kg/year (${pct.toFixed(1)}% of your footprint). ${top.savingsTip(top.annual)}.`;
 }
 
 function prefersReducedMotion() {
@@ -124,8 +131,10 @@ function saveFootprintHistory(entry, storage) {
 }
 
 function calculateBreakdown(inputs) {
+    const stateEF = (inputs.state && inputs.state !== 'National' && EF.electricity[inputs.state]) ? EF.electricity[inputs.state] : EF.electricity.National;
+
     const monthlyKg = {
-        electricity: inputs.electricity * EF.electricity,
+        electricity: inputs.electricity * stateEF,
         petrol: inputs.petrol * EF.petrol,
         train: inputs.train * EF.train,
         lpg: inputs.lpgCylinders * 14.2 * EF.lpg,
@@ -170,6 +179,12 @@ function initGlobalCounter() {
     setInterval(updateCounter, 1000);
 }
 
+function refreshIcons() {
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
 if (typeof module !== 'undefined') {
     module.exports = {
         AVG_KM_PER_LITRE,
@@ -196,6 +211,7 @@ if (typeof module !== 'undefined') {
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
         initGlobalCounter();
+        refreshIcons();
 
         const startBtn = document.getElementById('start-calc-btn');
         const heroSec = document.querySelector('.hero');
@@ -264,6 +280,7 @@ if (typeof document !== 'undefined') {
             event.preventDefault();
 
             const inputs = {
+                state: document.getElementById('state').value || 'National',
                 electricity: parseFloat(document.getElementById('electricity').value) || 0,
                 petrol: parseFloat(document.getElementById('petrol').value) || 0,
                 train: parseFloat(document.getElementById('train').value) || 0,
@@ -362,6 +379,7 @@ if (typeof document !== 'undefined') {
 
         function editPreviousInputs() {
             if (!baseFootprint.inputs) return;
+            if (document.getElementById('state')) document.getElementById('state').value = baseFootprint.inputs.state || 'National';
             document.getElementById('electricity').value = baseFootprint.inputs.electricity;
             document.getElementById('petrol').value = baseFootprint.inputs.petrol;
             document.getElementById('train').value = baseFootprint.inputs.train;
@@ -426,23 +444,32 @@ if (typeof document !== 'undefined') {
             document.getElementById('total-co2').innerText = data.total.toFixed(2);
             document.getElementById('projected-total').innerText = data.total.toFixed(2);
             downloadCardBtn.disabled = true;
+            
+            const shareLinks = document.getElementById('social-share-links');
+            if (shareLinks) shareLinks.style.display = 'none';
 
             if (latestCardUrl) {
                 URL.revokeObjectURL(latestCardUrl);
                 latestCardUrl = '';
             }
+            refreshIcons();
         }
 
         function updateCreditScore(scoreVal) {
             const scoreEl = document.getElementById('credit-score-val');
             const scoreLbl = document.getElementById('credit-score-label');
-            const scoreGaugeFill = document.getElementById('credit-gauge-fill');
+            const scoreGaugeFill = document.getElementById('credit-gauge-svg');
             const scoreTier = getScoreTier(scoreVal);
 
             scoreEl.className = `credit-score ${scoreTier.className}`;
             scoreLbl.className = `credit-label ${scoreTier.className}`;
             scoreLbl.innerText = scoreTier.label;
-            scoreGaugeFill.style.width = `${(scoreVal / 850) * 100}%`;
+            
+            if (scoreGaugeFill) {
+                const offset = 210 - (scoreVal / 850) * 210;
+                scoreGaugeFill.style.strokeDashoffset = offset;
+                scoreGaugeFill.style.stroke = getComputedStyle(scoreEl).color;
+            }
             animateScore(scoreEl, scoreVal);
         }
 
@@ -771,6 +798,8 @@ if (typeof document !== 'undefined') {
             ctx.fillText(new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }), 130, 995);
 
             downloadCardBtn.disabled = false;
+            const shareLinks = document.getElementById('social-share-links');
+            if (shareLinks) shareLinks.style.display = 'flex';
         }
 
         function downloadShareCard() {
@@ -866,7 +895,14 @@ window.toggleChallenge = function(element, id) {
 
     function getRuleBasedResponse(msg, fp) {
         const isCalculated = fp.total > 0;
-        if (msg.match(/hi|hello|hey|greetings/)) return "Hello! I'm your personalized AI Carbon Coach. How can I assist you with your carbon footprint today?";
+        
+        if (msg.match(/hi|hello|hey|greetings/)) {
+            if (isCalculated) {
+                return `Hello! I'm your AI Carbon Coach. I see you live in ${fp.city} and generate ${fp.total.toFixed(2)} tonnes of CO2 per year. How can I help you shrink that today?`;
+            }
+            return "Hello! I'm your personalized AI Carbon Coach. How can I assist you with your carbon footprint today?";
+        }
+        
         if (!isCalculated && msg.match(/reduce|score|footprint|my data|tips/)) return 'Please complete the calculator on the main screen first! I need your data to give you personalized advice.';
 
         if (msg.match(/reduce.*score|improve.*score|lower.*footprint|tips/)) {
@@ -875,13 +911,15 @@ window.toggleChallenge = function(element, id) {
             if (fp.scope2 > value) { highest = 'Scope 2 (Electricity)'; value = fp.scope2; }
             if (fp.scope3 > value) { highest = 'Scope 3 (Indirect/Diet)'; value = fp.scope3; }
 
-            let advice = `Based on your data, your biggest emission source is ${highest} at ${value.toFixed(2)} tonnes.\n\n`;
+            let advice = `Based on your specific data, your biggest emission source is ${highest} at ${value.toFixed(2)} tonnes.\n\n`;
+            
             if (highest.includes('Scope 1')) {
-                advice += 'Tip: Try switching part of your driving to an EV, carpooling, or reducing LPG use.';
+                advice += `Tip: In ${fp.city}, relying heavily on personal vehicles adds up. Your petrol use is ${(fp.inputs.petrol)} litres/month. If you replace 25% of that with public transit, you'd save ${((fp.inputs.petrol * 12 * 0.25 * EF.petrol) / 1000).toFixed(2)} tonnes annually!`;
             } else if (highest.includes('Scope 2')) {
-                advice += 'Tip: Cutting grid electricity with efficient appliances or solar can make the biggest dent.';
+                const sEF = (fp.inputs.state && EF.electricity[fp.inputs.state]) ? EF.electricity[fp.inputs.state] : EF.electricity.National;
+                advice += `Tip: Because you live in ${fp.city}, your grid emission factor is ${sEF}. Your ${fp.inputs.electricity} kWh/month is high. Cutting AC use by 2 hours a day could save you ${((50 * 12 * sEF) / 1000).toFixed(2)} tonnes annually!`;
             } else {
-                advice += 'Tip: Diet and travel choices are strong Scope 3 levers, especially with more plant-based meals.';
+                advice += `Tip: Your train and diet choices are driving your Scope 3. Since you are a ${fp.inputs.diet}, shifting just 2 meals a week to plant-based could save significant emissions over the year.`;
             }
             return advice;
         }
@@ -895,15 +933,8 @@ window.toggleChallenge = function(element, id) {
         if (msg.match(/what is scope 1|scope 1/)) return 'Scope 1 covers direct emissions like petrol in your car or LPG used for cooking.';
         if (msg.match(/what is scope 2|scope 2/)) return 'Scope 2 covers indirect emissions from purchased electricity.';
         if (msg.match(/what is scope 3|scope 3/)) return 'Scope 3 covers other indirect emissions like food and public transport.';
-        if (msg.match(/transport|driving|car|vehicle/)) return 'Try public transport a few times each week to chip away at your Scope 1 emissions.';
-        if (msg.match(/food|diet|meat|vegetarian/)) return 'Diet can be a major Scope 3 lever, and a vegetarian week can noticeably reduce your footprint.';
-
-        const responses = [
-            'Try the Scenario Simulator to see how different choices affect your emissions.',
-            'Aim for a Carbon Credit Score above 600 to reach the green zone.',
-            'Every small action counts: turn off lights, unplug devices, and walk short distances instead of driving.'
-        ];
-        return responses[Math.floor(Math.random() * responses.length)];
+        
+        return 'Every small action counts: turn off lights, unplug devices, and walk short distances instead of driving.';
     }
 
     function appendChatMsg(text, sender) {
@@ -914,4 +945,71 @@ window.toggleChallenge = function(element, id) {
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
+
+    window.addDailyLog = function() {
+        const typeEl = document.getElementById('daily-type');
+        const valEl = document.getElementById('daily-val');
+        const val = parseFloat(valEl.value);
+        if (!val || val <= 0) return;
+
+        let addedKg = 0;
+        if (typeEl.value === 'train') addedKg = val * EF.train;
+        if (typeEl.value === 'petrol') addedKg = val * EF.petrol;
+        if (typeEl.value === 'electricity') {
+            const sEF = (window.baseFootprint && window.baseFootprint.inputs && window.baseFootprint.inputs.state && EF.electricity[window.baseFootprint.inputs.state]) 
+                ? EF.electricity[window.baseFootprint.inputs.state] 
+                : EF.electricity.National;
+            addedKg = val * sEF;
+        }
+
+        const addedTonnes = addedKg / 1000;
+        
+        if (window.baseFootprint && window.baseFootprint.total > 0) {
+            window.baseFootprint.total += addedTonnes;
+            if (typeEl.value === 'electricity') window.baseFootprint.scope2 += addedTonnes;
+            if (typeEl.value === 'petrol') window.baseFootprint.scope1 += addedTonnes;
+            if (typeEl.value === 'train') window.baseFootprint.scope3 += addedTonnes;
+            
+            window.baseFootprint.score = window.calculateCreditScore(window.baseFootprint.total);
+            
+            valEl.value = '';
+            
+            // Just update UI rapidly
+            document.getElementById('total-co2').innerText = window.baseFootprint.total.toFixed(2);
+            document.getElementById('projected-total').innerText = window.baseFootprint.total.toFixed(2);
+            document.getElementById('credit-score-val').innerText = window.baseFootprint.score;
+            
+            // Trigger animation and colors
+            const scoreEl = document.getElementById('credit-score-val');
+            const scoreLbl = document.getElementById('credit-score-label');
+            const scoreGaugeFill = document.getElementById('credit-gauge-svg');
+            const scoreTier = getScoreTier(window.baseFootprint.score);
+
+            scoreEl.className = `credit-score ${scoreTier.className}`;
+            scoreLbl.className = `credit-label ${scoreTier.className}`;
+            scoreLbl.innerText = scoreTier.label;
+            
+            if (scoreGaugeFill) {
+                const offset = 210 - (window.baseFootprint.score / 850) * 210;
+                scoreGaugeFill.style.strokeDashoffset = offset;
+                scoreGaugeFill.style.stroke = getComputedStyle(scoreEl).color;
+            }
+
+            alert(`Logged ${val} ${typeEl.value}. Added ${addedKg.toFixed(2)} kg CO2 to your total footprint.`);
+        } else {
+            alert('Please calculate your base footprint first!');
+        }
+    };
+
+    window.shareToWhatsApp = function() {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent(`I just checked my Carbon Credit Score on EcoTrack India! I scored ${window.baseFootprint.score} / 850. Check yours out here: `);
+        window.open(`https://wa.me/?text=${text}${url}`, '_blank');
+    };
+
+    window.shareToTwitter = function() {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent(`I just scored ${window.baseFootprint.score}/850 on the EcoTrack India Carbon Calculator! 🌱 Can you beat my score? `);
+        window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+    };
 }

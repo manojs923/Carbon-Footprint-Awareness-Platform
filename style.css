@@ -1,13 +1,13 @@
 :root {
-  --bg-color: #0a0f0a;
+  --bg-color: #0d120d;
   --text-color: #e0e0e0;
-  --muted-text: #c8d5c8;
+  --muted-text: #b0c4b0;
   --heading-color: #ffffff;
   --accent-color: #39ff14;
   --accent-hover: #2cd40e;
-  --card-bg: rgba(20, 30, 20, 0.68);
-  --border-color: rgba(57, 255, 20, 0.2);
-  --surface-color: rgba(255, 255, 255, 0.05);
+  --card-bg: rgba(20, 26, 20, 0.75);
+  --border-color: rgba(57, 255, 20, 0.15);
+  --surface-color: rgba(57, 255, 20, 0.05);
   --chart-label-color: #f4fff4;
   --grid-color: #2e3b2e;
   --font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -15,14 +15,14 @@
 }
 
 body.light-mode {
-  --bg-color: #f5fbf2;
-  --text-color: #173a17;
+  --bg-color: #f7fbf6;
+  --text-color: #1a2e1a;
   --muted-text: #395a39;
-  --heading-color: #123112;
-  --card-bg: rgba(255, 255, 255, 0.92);
-  --border-color: rgba(20, 96, 20, 0.18);
-  --surface-color: rgba(20, 60, 20, 0.06);
-  --chart-label-color: #173a17;
+  --heading-color: #112211;
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --border-color: rgba(57, 255, 20, 0.3);
+  --surface-color: rgba(57, 255, 20, 0.08);
+  --chart-label-color: #1a2e1a;
   --grid-color: #d5e3d2;
 }
 
@@ -139,10 +139,63 @@ p {
   transform: translate(-50%, -50%);
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(57, 255, 20, 0.15) 0%, rgba(10, 15, 10, 0) 70%);
+  background: radial-gradient(circle, rgba(57, 255, 20, 0.12) 0%, rgba(10, 15, 10, 0) 70%);
   z-index: -1;
   border-radius: 50%;
   animation: pulse 4s infinite alternate;
+}
+
+.hero-content {
+  max-width: 700px;
+  margin-bottom: 3rem;
+}
+
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(57, 255, 20, 0.1);
+  border: 1px solid var(--border-color);
+  color: var(--accent-color);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2rem;
+  font-size: 1.15rem;
+  padding: 16px 36px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 1000px;
+  margin-top: 2rem;
+}
+
+.feature-card {
+  padding: 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 20px;
+}
+
+.feature-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--accent-color);
+  margin-bottom: 1rem;
 }
 
 @keyframes pulse {
@@ -216,6 +269,16 @@ section {
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes fadeUp {
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -326,24 +389,45 @@ body.light-mode .hero-score-card {
   margin-bottom: 0.5rem;
 }
 
-.credit-gauge {
-  width: min(420px, 100%);
-  height: 16px;
-  margin: 1rem auto 1.5rem;
-  background: linear-gradient(90deg, #ff4757 0%, #ffa502 30%, #b9ff36 65%, #39ff14 100%);
-  border-radius: 999px;
-  padding: 3px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+/* Circular Gauge CSS */
+.gauge-container {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  margin: 0 auto 1rem;
 }
 
-.credit-gauge-fill {
+.circular-gauge {
+  width: 100%;
   height: 100%;
-  width: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.24);
-  box-shadow: 0 0 14px rgba(255, 255, 255, 0.25);
-  transform-origin: left center;
-  transition: width 0.8s ease;
+  transform: rotate(135deg);
+}
+
+.gauge-bg {
+  stroke: var(--surface-color);
+}
+
+.gauge-fill {
+  stroke: var(--accent-color);
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.gauge-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.credit-score {
+  font-size: 4.5rem;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 0 30px currentColor;
+  transition: color 1s ease, text-shadow 1s ease;
 }
 
 .score-red { color: #ff4757; }
@@ -605,7 +689,9 @@ body.light-mode .challenge-badge {
 }
 
 .ch-icon {
-  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  color: var(--accent-color);
   margin-bottom: 0.5rem;
 }
 

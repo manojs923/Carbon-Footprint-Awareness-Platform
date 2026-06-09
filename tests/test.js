@@ -38,7 +38,7 @@ console.log('Starting Carbon Footprint Calculator Tests...\n');
 try {
     let elecUsage = 100;
     let expectedElecCo2 = 100 * 0.82;
-    assert.strictEqual(elecUsage * EF.electricity, expectedElecCo2, 'Electricity calculation failed');
+    assert.strictEqual(elecUsage * EF.electricity.National, expectedElecCo2, 'Electricity calculation failed');
     console.log('Test 1 Passed: Electricity Emission Factor (Scope 2)');
 
     let petrolUsage = 50;
@@ -86,6 +86,7 @@ try {
     console.log('Test 11 Passed: Dietary preference CO2 values');
 
     const breakdown = calculateBreakdown({
+        state: 'Delhi',
         electricity: 100,
         petrol: 20,
         train: 50,
@@ -119,6 +120,7 @@ try {
     const hotspot = getHotspotInsight(breakdown);
     assert.ok(hotspot.includes('Diet') || hotspot.includes('Petrol') || hotspot.includes('Electricity'), 'Hotspot insight should mention a top category');
     assert.ok(hotspot.includes('%'), 'Hotspot insight should include contribution percentage');
+    assert.ok(hotspot.includes('saves') || hotspot.includes('save'), 'Hotspot insight should include quantified savings tip');
     console.log('Test 16 Passed: Hotspot insight helper');
 
     console.log('\nAll tests passed successfully!');
