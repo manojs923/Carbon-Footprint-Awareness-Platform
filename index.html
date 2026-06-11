@@ -361,13 +361,24 @@
                     <div class="ai-msg bot">Hi! I'm your AI Carbon Coach. Calculate your footprint, then ask me how to improve your score!</div>
                 </div>
                 <div class="ai-input-area">
-                    <input type="text" id="ai-user-input" placeholder="How do I reduce my score?" class="ai-input" aria-label="Ask the AI carbon coach a question" onkeypress="if(event.key === 'Enter') sendAIMessage()">
-                    <button onclick="sendAIMessage()" class="ai-send-btn" aria-label="Send chat message">Send</button>
+                    <button class="btn secondary-btn" id="ai-quick-tips-btn" onclick="document.getElementById('ai-user-input').value='Give me personalized tips'; sendAIMessage();" style="width: 100%; margin-bottom: 8px; font-size: 0.8rem; padding: 4px;">Get Personalized Tips</button>
+                    <div style="display:flex; width: 100%; gap: 5px;">
+                        <input type="text" id="ai-user-input" placeholder="How do I reduce my score?" class="ai-input" aria-label="Ask the AI carbon coach a question" onkeypress="if(event.key === 'Enter') sendAIMessage()">
+                        <button onclick="sendAIMessage()" class="ai-send-btn" aria-label="Send chat message">Send</button>
+                    </div>
                 </div>
             </div>
         </div>
         <!-- Toast Notifications -->
         <div id="toast-container" class="toast-container" aria-live="assertive" role="alert"></div>
+
+        <!-- Onboarding Tour Overlay -->
+        <div id="tour-overlay" class="tour-overlay"></div>
+        <div id="tour-tooltip" class="tour-tooltip" role="dialog" aria-label="Onboarding Tour">
+            <h3 style="margin-top:0; font-size:1.1rem; color:var(--primary-color);">Welcome to your Dashboard!</h3>
+            <p id="tour-text">Here is your AI-calculated Carbon Credit Score.</p>
+            <button class="btn" id="tour-next-btn">Next</button>
+        </div>
 
     </main>
 

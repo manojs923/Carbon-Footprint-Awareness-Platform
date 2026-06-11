@@ -344,6 +344,12 @@ if (typeof document !== 'undefined') {
                     calcBtn.innerHTML = originalBtnHtml;
                     refreshIcons();
                 }
+
+                // Trigger onboarding tour if first time
+                setTimeout(() => {
+                    initOnboardingTour();
+                }, 1000);
+
             }, 800);
         });
 
@@ -830,6 +836,34 @@ if (typeof document !== 'undefined') {
             ctx.fillText('Calculated on EcoTrack India', 130, 940);
             ctx.fillText(new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }), 130, 995);
 
+            // Draw Custom QR Code Placeholder
+            ctx.save();
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 15;
+            ctx.shadowOffsetY = 5;
+            ctx.beginPath();
+            ctx.roundRect(750, 870, 150, 150, 12);
+            ctx.fill();
+            ctx.shadowColor = 'transparent'; // turn off shadow
+            
+            // Draw mock QR pattern inside the box
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(770, 890, 30, 30); // Top-left square
+            ctx.fillRect(850, 890, 30, 30); // Top-right square
+            ctx.fillRect(770, 970, 30, 30); // Bottom-left square
+            ctx.fillRect(815, 935, 40, 40); // Middle cluster
+            ctx.fillRect(860, 980, 20, 20); // Bottom-right corner
+            ctx.fillRect(780, 945, 15, 15); // Random dot
+            ctx.fillRect(820, 905, 15, 15); // Random dot
+            ctx.fillRect(860, 945, 15, 15); // Random dot
+
+            ctx.fillStyle = '#b9ff36';
+            ctx.font = '500 24px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('Scan to calculate', 825, 1055);
+            ctx.restore();
+
             downloadCardBtn.disabled = false;
             const shareLinks = document.getElementById('social-share-links');
             if (shareLinks) shareLinks.style.display = 'flex';
@@ -941,7 +975,7 @@ window.toggleChallenge = function(element, id) {
         
         if (!isCalculated && msg.match(/reduce|score|footprint|my data|tips/)) return 'Please complete the calculator on the main screen first! I need your data to give you personalized advice.';
 
-        if (msg.match(/reduce.*score|improve.*score|lower.*footprint|tips/)) {
+        if (msg.match(/reduce.*score|improve.*score|lower.*footprint|tips|give me personalized tips/)) {
             let highest = 'Scope 1 (Direct Fuel)';
             let value = fp.scope1;
             if (fp.scope2 > value) { highest = 'Scope 2 (Electricity)'; value = fp.scope2; }
@@ -950,12 +984,12 @@ window.toggleChallenge = function(element, id) {
             let advice = `Based on your specific data, your biggest emission source is ${highest} at ${value.toFixed(2)} tonnes.\n\n`;
             
             if (highest.includes('Scope 1')) {
-                advice += `Tip: In ${fp.city}, relying heavily on personal vehicles adds up. Your petrol use is ${(fp.inputs.petrol)} litres/month. If you replace 25% of that with public transit, you'd save ${((fp.inputs.petrol * 12 * 0.25 * EF.petrol) / 1000).toFixed(2)} tonnes annually!`;
+                advice += `Top 3 Personalized Tips:\n1. Your petrol use is ${(fp.inputs.petrol)} L/month. Replacing just 25% of your driving with public transit saves ${((fp.inputs.petrol * 12 * 0.25 * EF.petrol) / 1000).toFixed(2)} tonnes annually.\n2. Ensure your tire pressure is optimal; it improves mileage by 3%.\n3. Consider switching to an EV for your next vehicle.`;
             } else if (highest.includes('Scope 2')) {
                 const sEF = (fp.inputs.state && EF.electricity[fp.inputs.state]) ? EF.electricity[fp.inputs.state] : EF.electricity.National;
-                advice += `Tip: Because you live in ${fp.city}, your grid emission factor is ${sEF}. Your ${fp.inputs.electricity} kWh/month is high. Cutting AC use by 2 hours a day could save you ${((50 * 12 * sEF) / 1000).toFixed(2)} tonnes annually!`;
+                advice += `Top 3 Personalized Tips:\n1. You live in ${fp.city} where the grid emission factor is ${sEF}. Cutting AC use by just 2 hours a day could save you ${((50 * 12 * sEF) / 1000).toFixed(2)} tonnes annually!\n2. Switch all remaining bulbs to LED.\n3. Unplug appliances when not in use to stop "vampire" energy drain.`;
             } else {
-                advice += `Tip: Your train and diet choices are driving your Scope 3. Since you are a ${fp.inputs.diet}, shifting just 2 meals a week to plant-based could save significant emissions over the year.`;
+                advice += `Top 3 Personalized Tips:\n1. Your train/flight/diet choices are driving your Scope 3. Since you are a ${fp.inputs.diet}, shifting just 2 meals a week to plant-based could save significant emissions.\n2. Buy local produce to reduce transportation footprints.\n3. Start composting organic waste.`;
             }
             return advice;
         }
@@ -997,6 +1031,72 @@ window.toggleChallenge = function(element, id) {
                 document.getElementById('city').value = inputs.city || 'Bengaluru';
             }
         } catch(e) {}
+    }
+
+    // --- Onboarding Tour ---
+    function initOnboardingTour() {
+        if (getStorage()?.getItem('ecotrack_tour_done')) return;
+        
+        const overlay = document.getElementById('tour-overlay');
+        const tooltip = document.getElementById('tour-tooltip');
+        const text = document.getElementById('tour-text');
+        const nextBtn = document.getElementById('tour-next-btn');
+        if (!overlay || !tooltip) return;
+
+        let step = 1;
+        const steps = [
+            { el: document.querySelector('.hero-score-card'), msg: "Here is your AI-calculated Carbon Credit Score! Try to keep it in the Green zone above 600." },
+            { el: document.querySelector('.share-actions'), msg: "Share your score with friends to unlock the 'Influencer' badge and spread awareness!" }
+        ];
+
+        let currentHighlight = null;
+
+        function showStep(index) {
+            if (currentHighlight) {
+                currentHighlight.classList.remove('tour-highlight');
+            }
+            if (index >= steps.length) {
+                // End tour
+                overlay.classList.remove('active');
+                tooltip.classList.remove('active');
+                getStorage()?.setItem('ecotrack_tour_done', 'true');
+                return;
+            }
+
+            const target = steps[index].el;
+            if (!target) {
+                showStep(index + 1);
+                return;
+            }
+
+            target.classList.add('tour-highlight');
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            currentHighlight = target;
+
+            text.innerText = steps[index].msg;
+            
+            setTimeout(() => {
+                const rect = target.getBoundingClientRect();
+                tooltip.style.top = `${window.scrollY + rect.bottom + 20}px`;
+                tooltip.style.left = `50%`;
+                tooltip.style.transform = `translateX(-50%)`;
+                
+                if (index === steps.length - 1) {
+                    nextBtn.innerText = "Got it!";
+                }
+                
+                overlay.classList.add('active');
+                tooltip.classList.add('active');
+            }, 500);
+        }
+
+        nextBtn.addEventListener('click', () => {
+            step++;
+            showStep(step - 1);
+        });
+
+        // Start
+        showStep(0);
     }
 
     // --- Gamification ---
