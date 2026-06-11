@@ -48,10 +48,10 @@ function calculateCreditScore(totalTonnes, globalAvg = INDIA_AVG) {
 }
 
 function getScoreTier(score) {
-    if (score <= 300) return { label: 'CARBON ROOKIE', className: 'score-red' };
-    if (score <= 500) return { label: 'ECO AWARE', className: 'score-orange' };
-    if (score <= 700) return { label: 'GREEN CHAMPION', className: 'score-yellowgreen' };
-    return { label: 'CARBON HERO', className: 'score-brightgreen' };
+    if (score <= 300) return { label: 'CARBON ROOKIE', className: 'score-red', color: '#ff4d4d' };
+    if (score <= 500) return { label: 'ECO AWARE', className: 'score-orange', color: '#f39c12' };
+    if (score <= 700) return { label: 'GREEN CHAMPION', className: 'score-yellowgreen', color: '#b9ff36' };
+    return { label: 'CARBON HERO', className: 'score-brightgreen', color: '#39ff14' };
 }
 
 function calculateEquivalentFacts(totalTonnes) {
@@ -796,7 +796,7 @@ if (typeof document !== 'undefined') {
 
             ctx.fillStyle = '#d0fbd0';
             ctx.font = '700 56px Inter';
-            ctx.fillText(tier.name, 130, 520);
+            ctx.fillText(tier.label, 130, 520);
 
             ctx.fillStyle = '#0c180c';
             ctx.fillRect(130, 580, 820, 240);
