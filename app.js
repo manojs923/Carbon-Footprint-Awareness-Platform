@@ -1,3 +1,8 @@
+"use strict";
+
+/**
+ * Global Constants & Configurations
+ */
 const HISTORY_STORAGE_KEY = 'ecotrack-history';
 const THEME_STORAGE_KEY = 'ecotrack-theme';
 const INDIA_AVG = 1.9;
@@ -39,14 +44,31 @@ const CITY_AVG = {
     Surat: 2.05
 };
 
+/**
+ * Retrieves the average carbon footprint baseline for a specific city.
+ * @param {string} city - The name of the city (e.g., 'Bengaluru', 'Mumbai').
+ * @returns {number} The average carbon footprint in tonnes.
+ */
 function getCityAverage(city) {
     return CITY_AVG[city] || INDIA_AVG;
 }
 
+/**
+ * Calculates a gamified "Carbon Credit Score" based on the total footprint.
+ * Lower emissions result in a higher score (Max 850).
+ * @param {number} totalTonnes - The user's total calculated footprint in tonnes.
+ * @param {number} [globalAvg=INDIA_AVG] - The baseline average to compare against.
+ * @returns {number} The calculated score from 0 to 850.
+ */
 function calculateCreditScore(totalTonnes, globalAvg = INDIA_AVG) {
     return Math.round(Math.max(0, 850 - ((totalTonnes / globalAvg) * 425)));
 }
 
+/**
+ * Determines the tier classification based on the Carbon Credit Score.
+ * @param {number} score - The calculated carbon credit score.
+ * @returns {{label: string, className: string, color: string}} An object containing tier details.
+ */
 function getScoreTier(score) {
     if (score <= 300) return { label: 'CARBON ROOKIE', className: 'score-red', color: '#ff4d4d' };
     if (score <= 500) return { label: 'ECO AWARE', className: 'score-orange', color: '#f39c12' };
@@ -54,6 +76,11 @@ function getScoreTier(score) {
     return { label: 'CARBON HERO', className: 'score-brightgreen', color: '#39ff14' };
 }
 
+/**
+ * Converts total carbon tonnage into real-world equivalent metrics.
+ * @param {number} totalTonnes - The user's total footprint in tonnes.
+ * @returns {{kmByCar: number, treesNeeded: number, phoneCharges: number, flightsMumbaiDelhi: number}} Equivalent metrics.
+ */
 function calculateEquivalentFacts(totalTonnes) {
     const totalKgCO2 = totalTonnes * 1000;
     return {
@@ -82,6 +109,11 @@ function getCityTip(city, totalTonnes) {
     return `${tips[city] || 'Your city benchmark helps anchor the next best improvements.'} ${compare}`;
 }
 
+/**
+ * Evaluates the highest emitting category and provides a dynamic savings insight.
+ * @param {Object} breakdown - The user's specific emission breakdown data.
+ * @returns {string} A personalized insight string.
+ */
 function getHotspotInsight(breakdown) {
     const categories = [
         { key: 'electricity', label: 'Electricity', annual: breakdown.annualKg.electricity, savingsTip: (val) => `Switching to solar could save ${(val*0.8/1000).toFixed(1)} tonnes/yr` },
@@ -95,6 +127,10 @@ function getHotspotInsight(breakdown) {
     return `${top.label} is your biggest driver at ${top.annual.toFixed(1)} kg/year (${pct.toFixed(1)}% of your footprint). ${top.savingsTip(top.annual)}.`;
 }
 
+/**
+ * Checks system preferences for reduced motion settings.
+ * @returns {boolean} True if reduced motion is preferred.
+ */
 function prefersReducedMotion() {
     return typeof window !== 'undefined'
         && typeof window.matchMedia === 'function'
@@ -130,6 +166,11 @@ function saveFootprintHistory(entry, storage) {
     return nextHistory;
 }
 
+/**
+ * Calculates the complete carbon footprint breakdown based on form inputs.
+ * @param {Object} inputs - Raw input data from the form.
+ * @returns {Object} Calculated annual emissions per category and totals.
+ */
 function calculateBreakdown(inputs) {
     const stateEF = (inputs.state && inputs.state !== 'National' && EF.electricity[inputs.state]) ? EF.electricity[inputs.state] : EF.electricity.National;
 
