@@ -27,7 +27,7 @@
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark and light mode">
             <i data-lucide="sun" id="theme-toggle-icon"></i>
         </button>
-        <div id="return-banner" style="display:none; width: 100%; background: rgba(0, 200, 150, 0.2); border-bottom: 1px solid var(--primary-color); padding: 10px 20px; text-align: center; font-size: 0.95rem;"></div>
+        <div id="return-banner" role="alert" aria-live="polite" style="display:none; width: 100%; background: rgba(0, 200, 150, 0.2); border-bottom: 1px solid var(--primary-color); padding: 10px 20px; text-align: center; font-size: 0.95rem;"></div>
     </header>
     <main id="main-content" role="main">
         <!-- Hero Section & Landing Page -->
@@ -39,8 +39,8 @@
                 <button id="start-calc-btn" class="btn hero-btn" aria-label="Start carbon calculator">
                     Start tracking <i data-lucide="arrow-right"></i>
                 </button>
-                <div style="margin-top: 1.5rem; font-size: 0.9rem; color: #a0a0a0;">
-                    🌍 <span id="live-counter" style="font-weight:bold; color:var(--text-color); transition: color 0.3s;">--</span> Indians have tracked their footprint today
+                <div style="margin-top: 1.5rem; font-size: 0.9rem; color: #a0a0a0;" aria-live="polite" aria-atomic="true">
+                    🌍 <span id="live-counter" style="font-weight:bold; color:var(--text-color); transition: color 0.3s;" aria-label="Live tracking counter">--</span> Indians have tracked their footprint today
                 </div>
             </div>
             
@@ -365,7 +365,7 @@
                     <div class="ai-msg bot">Hi! I'm your AI Carbon Coach. Calculate your footprint, then ask me how to improve your score!</div>
                 </div>
                 <div class="ai-input-area">
-                    <button class="btn secondary-btn" id="ai-quick-tips-btn" onclick="document.getElementById('ai-user-input').value='Give me personalized tips'; sendAIMessage();" style="width: 100%; margin-bottom: 8px; font-size: 0.8rem; padding: 4px;">Get Personalized Tips</button>
+                    <button class="btn secondary-btn" id="ai-quick-tips-btn" aria-label="Get personalized AI tips based on your data" onclick="document.getElementById('ai-user-input').value='Give me personalized tips'; sendAIMessage();" style="width: 100%; margin-bottom: 8px; font-size: 0.8rem; padding: 4px;">Get Personalized Tips</button>
                     <div style="display:flex; width: 100%; gap: 5px;">
                         <input type="text" id="ai-user-input" placeholder="How do I reduce my score?" class="ai-input" aria-label="Ask the AI carbon coach a question" onkeypress="if(event.key === 'Enter') sendAIMessage()">
                         <button onclick="sendAIMessage()" class="ai-send-btn" aria-label="Send chat message">Send</button>
@@ -377,11 +377,11 @@
         <div id="toast-container" class="toast-container" aria-live="assertive" role="alert"></div>
 
         <!-- Onboarding Tour Overlay -->
-        <div id="tour-overlay" class="tour-overlay"></div>
-        <div id="tour-tooltip" class="tour-tooltip" role="dialog" aria-label="Onboarding Tour">
-            <h3 style="margin-top:0; font-size:1.1rem; color:var(--primary-color);">Welcome to your Dashboard!</h3>
+        <div id="tour-overlay" class="tour-overlay" aria-hidden="true"></div>
+        <div id="tour-tooltip" class="tour-tooltip" role="dialog" aria-labelledby="tour-heading" aria-modal="true" aria-hidden="true">
+            <h3 id="tour-heading" style="margin-top:0; font-size:1.1rem; color:var(--primary-color);">Welcome to your Dashboard!</h3>
             <p id="tour-text">Here is your AI-calculated Carbon Credit Score.</p>
-            <button class="btn" id="tour-next-btn">Next</button>
+            <button class="btn" id="tour-next-btn" aria-label="Next tour step">Next</button>
         </div>
 
     </main>

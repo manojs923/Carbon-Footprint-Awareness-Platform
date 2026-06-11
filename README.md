@@ -13,14 +13,22 @@ We chose this vertical to shift the narrative from climate anxiety to actionable
 
 ---
 
-## 🚀 Approach and Logic
-Our approach focused on zero-dependency, lightning-fast architecture. The platform was built entirely with HTML, CSS (Glassmorphism), and Vanilla JavaScript to ensure maximum efficiency.
+## 🚀 Approach and Logic (Smart Decision Making)
+Our approach focused on building a deeply contextual, logic-driven architecture. The platform was built entirely with HTML, CSS (Glassmorphism), and Vanilla JavaScript to ensure maximum efficiency without relying on external bloat.
 
-### Logic Flow:
-1. **Data Collection:** Collects user inputs across Transport (Scope 1/3), Home Energy (Scope 2), and Diet/Waste (Scope 3).
-2. **Algorithm Processing:** Applies localized Indian emission factors. For example, electricity calculation inherently depends on the chosen State, acknowledging that coal-heavy states have a different grid emission factor than high-renewable states.
-3. **Scoring:** The total footprint (in tonnes) is mathematically inverted and scaled to generate a "Carbon Credit Score" (0-850), mimicking a financial credit score.
-4. **Insights:** AI logic maps the highest emission category (e.g., Petrol) to an array of specific, personalized mitigation strategies.
+### Smart Logic Flow:
+1. **Contextual Data Collection:** Collects user inputs across Transport (Scope 1/3), Home Energy (Scope 2), and Diet/Waste (Scope 3).
+2. **Dynamic Algorithmic Processing:** Applies localized Indian emission factors. The logic recognizes that electricity calculation inherently depends on the chosen State—acknowledging that coal-heavy states have a drastically different grid emission factor than high-renewable states.
+3. **Scoring Engine:** The total footprint is mathematically inverted and scaled to generate a dynamic "Carbon Credit Score" (0-850), mimicking a financial credit score based on user context.
+4. **Smart Decision Making:** The AI engine maps the highest emission category (e.g., Petrol vs. Electricity) and the user's specific context (e.g., Diet Type, State) to an array of specific, personalized mitigation strategies.
+
+---
+
+## 🤖 Smart & Dynamic Assistant
+The core of EcoTrack India is the **Dynamic AI Carbon Coach**. Rather than outputting generic environmental tips, the assistant utilizes logical decision-making based on user context:
+- It parses the user's calculated Scope 1, Scope 2, and Scope 3 emissions.
+- It identifies the exact statistical bottleneck (e.g., if Scope 2 is highest, it retrieves their specific State's grid factor).
+- It generates actionable math-based tips (e.g., "In your state, cutting AC by 2 hours saves X tonnes based on the 0.71 grid factor").
 
 ---
 

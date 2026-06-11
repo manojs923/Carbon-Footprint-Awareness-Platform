@@ -1141,6 +1141,8 @@ window.toggleChallenge = function(element, id) {
                 // End tour
                 overlay.classList.remove('active');
                 tooltip.classList.remove('active');
+                overlay.setAttribute('aria-hidden', 'true');
+                tooltip.setAttribute('aria-hidden', 'true');
                 getStorage()?.setItem('ecotrack_tour_done', 'true');
                 return;
             }
@@ -1169,6 +1171,8 @@ window.toggleChallenge = function(element, id) {
                 
                 overlay.classList.add('active');
                 tooltip.classList.add('active');
+                overlay.removeAttribute('aria-hidden');
+                tooltip.removeAttribute('aria-hidden');
             }, 500);
         }
 
