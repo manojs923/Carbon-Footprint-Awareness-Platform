@@ -255,6 +255,75 @@ if (typeof document !== 'undefined') {
         loadAchievements();
         window.baseFootprint = baseFootprint;
 
+        // Progress Persistence Check
+        checkReturnVisit();
+
+        function checkReturnVisit() {
+            try {
+                const saved = getStorage()?.getItem('ecotrack_last_result');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    const banner = document.getElementById('return-banner');
+                    if (banner) {
+                        banner.innerHTML = `👋 Welcome back! Your last score was <strong>${data.score}</strong> (${data.tier}) on ${data.date}. 
+                            <button id="view-last-btn" class="btn" style="padding:4px 8px; font-size:0.8rem; margin: 0 10px;">View Last Results</button>
+                            <button id="recalc-btn" class="btn secondary-btn" style="padding:4px 8px; font-size:0.8rem;">Recalculate</button>`;
+                        banner.style.display = 'block';
+
+                        document.getElementById('view-last-btn').addEventListener('click', () => {
+                            banner.style.display = 'none';
+                            baseFootprint.total = data.totalKg / 1000;
+                            baseFootprint.score = data.score;
+                            // Rehydrate enough data to show dashboard without running form
+                            // Using last history entry as breakdown proxy if needed, or just let charts be empty
+                            const hist = getFootprintHistory();
+                            if (hist && hist.length > 0) {
+                                const lastHist = hist[hist.length - 1];
+                                baseFootprint = { ...baseFootprint, ...lastHist.fullData };
+                            }
+                            heroSec.style.display = 'none';
+                            calcSec.style.display = 'none';
+                            dashSec.style.display = 'block';
+                            updateDashboard(baseFootprint);
+                            dashSec.scrollIntoView({ behavior: 'smooth' });
+                        });
+
+                        document.getElementById('recalc-btn').addEventListener('click', () => {
+                            banner.style.display = 'none';
+                            heroSec.style.display = 'none';
+                            calcSec.style.display = 'block';
+                        });
+                    }
+                }
+            } catch (e) { console.error('Persistence error:', e); }
+        }
+
+        function initGlobalCounter() {
+            const counterEl = document.getElementById('live-counter');
+            if (!counterEl) return;
+            
+            // Random start between 1847 and 2100
+            let count = Math.floor(Math.random() * (2100 - 1847 + 1)) + 1847;
+            counterEl.innerText = count.toLocaleString();
+
+            function increment() {
+                count++;
+                counterEl.innerText = count.toLocaleString();
+                // Brief yellow flash
+                counterEl.style.color = '#ffe66d';
+                setTimeout(() => {
+                    counterEl.style.color = 'var(--text-color)';
+                }, 400);
+
+                // Next random interval between 8000 and 15000 ms
+                const nextInterval = Math.floor(Math.random() * (15000 - 8000 + 1)) + 8000;
+                setTimeout(increment, nextInterval);
+            }
+            
+            const initialInterval = Math.floor(Math.random() * (15000 - 8000 + 1)) + 8000;
+            setTimeout(increment, initialInterval);
+        }
+
         startBtn.addEventListener('click', () => {
             heroSec.style.display = 'none';
             calcSec.style.display = 'block';
@@ -320,7 +389,8 @@ if (typeof document !== 'undefined') {
                 diet: inputs.diet,
                 inputs,
                 breakdown,
-                history
+                history,
+                fullData: { scope1: breakdown.annualKg.petrol/1000 + breakdown.annualKg.lpg/1000, scope2: breakdown.annualKg.electricity/1000, scope3: breakdown.annualKg.train/1000 + breakdown.annualKg.diet/1000, breakdown }
             };
             
             getStorage()?.setItem('ecotrack-inputs', JSON.stringify(inputs));
@@ -339,6 +409,15 @@ if (typeof document !== 'undefined') {
                 dashSec.style.display = 'block';
                 updateDashboard(baseFootprint);
                 checkAchievements();
+                
+                // Save Progress Persistence
+                const tier = getScoreTier(baseFootprint.score);
+                getStorage()?.setItem('ecotrack_last_result', JSON.stringify({
+                    score: baseFootprint.score,
+                    tier: tier.label,
+                    totalKg: baseFootprint.total * 1000,
+                    date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                }));
                 
                 if (calcBtn) {
                     calcBtn.innerHTML = originalBtnHtml;
@@ -1045,8 +1124,11 @@ window.toggleChallenge = function(element, id) {
 
         let step = 1;
         const steps = [
-            { el: document.querySelector('.hero-score-card'), msg: "Here is your AI-calculated Carbon Credit Score! Try to keep it in the Green zone above 600." },
-            { el: document.querySelector('.share-actions'), msg: "Share your score with friends to unlock the 'Influencer' badge and spread awareness!" }
+            { el: document.querySelector('.gauge-container'), msg: "Your AI-calculated Carbon Credit Score. Aim for 600+!" },
+            { el: document.getElementById('equivalent-facts'), msg: "See your footprint in real-world terms 🌍" },
+            { el: document.querySelector('.scope-labels').parentNode, msg: "Understand WHERE your emissions come from" },
+            { el: document.getElementById('leaderboardChart').parentNode.parentNode, msg: "Compare yourself against 8 Indian cities" },
+            { el: document.querySelector('.share-actions'), msg: "Challenge friends and unlock the Influencer badge!" }
         ];
 
         let currentHighlight = null;

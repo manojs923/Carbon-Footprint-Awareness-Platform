@@ -27,6 +27,7 @@
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark and light mode">
             <i data-lucide="sun" id="theme-toggle-icon"></i>
         </button>
+        <div id="return-banner" style="display:none; width: 100%; background: rgba(0, 200, 150, 0.2); border-bottom: 1px solid var(--primary-color); padding: 10px 20px; text-align: center; font-size: 0.95rem;"></div>
     </header>
     <main id="main-content" role="main">
         <!-- Hero Section & Landing Page -->
@@ -38,6 +39,9 @@
                 <button id="start-calc-btn" class="btn hero-btn" aria-label="Start carbon calculator">
                     Start tracking <i data-lucide="arrow-right"></i>
                 </button>
+                <div style="margin-top: 1.5rem; font-size: 0.9rem; color: #a0a0a0;">
+                    🌍 <span id="live-counter" style="font-weight:bold; color:var(--text-color); transition: color 0.3s;">--</span> Indians have tracked their footprint today
+                </div>
             </div>
             
             <div class="features-grid">
