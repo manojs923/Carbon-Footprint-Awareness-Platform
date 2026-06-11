@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ecotrack-v5';
+const CACHE_NAME = 'ecotrack-v6';
 const ASSETS = [
     './',
     './index.html',

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Carbon Footprint Awareness Platform to track and reduce your emissions.">
     <!-- SECURITY: Strict Content Security Policy to prevent XSS and ensure safe execution -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://lucide.dev;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://cdn.jsdelivr.net https://unpkg.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://lucide.dev;">
     <title>Carbon Footprint Awareness Platform</title>
     <meta name="description" content="Calculate, track, and reduce your carbon footprint with actionable AI insights.">
     <meta name="theme-color" content="#39ff14">
@@ -17,13 +17,6 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest" defer></script>
     <script src="app.js" defer></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed: ', err));
-            });
-        }
-    </script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -181,7 +174,6 @@
                     </div>
                     <div class="social-share" id="social-share-links" style="display:none; margin-top: 1rem; gap: 1rem; justify-content: center;">
                         <button class="btn secondary-btn" onclick="shareToWhatsApp()"><i data-lucide="message-circle"></i> WhatsApp</button>
-                        <button class="btn secondary-btn" onclick="shareToTwitter()"><i data-lucide="twitter"></i> Twitter</button>
                     </div>
                     <canvas id="share-card-canvas" width="1080" height="1080" aria-label="Shareable carbon score card preview" tabindex="0"></canvas>
                 </div>
