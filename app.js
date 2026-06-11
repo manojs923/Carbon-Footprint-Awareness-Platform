@@ -220,8 +220,6 @@ if (typeof document !== 'undefined') {
         const form = document.getElementById('carbon-form');
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-toggle-icon');
-        const methodologyToggle = document.getElementById('methodology-toggle');
-        const methodologyPanel = document.getElementById('methodology-panel');
         const shareScoreBtn = document.getElementById('share-score-btn');
         const downloadCardBtn = document.getElementById('download-card-btn');
         const editInputsBtn = document.getElementById('edit-inputs-btn');
@@ -349,15 +347,6 @@ if (typeof document !== 'undefined') {
             }, 800);
         });
 
-        methodologyToggle.addEventListener('click', () => {
-            const willOpen = !methodologyPanel.hasAttribute('open');
-            if (willOpen) {
-                methodologyPanel.setAttribute('open', '');
-            } else {
-                methodologyPanel.removeAttribute('open');
-            }
-            methodologyToggle.setAttribute('aria-expanded', String(willOpen));
-        });
         themeToggle.addEventListener('click', toggleTheme);
         shareScoreBtn.addEventListener('click', () => {
             if (baseFootprint.total > 0) {
