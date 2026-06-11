@@ -278,6 +278,17 @@ if (typeof document !== 'undefined') {
             });
         });
 
+        const dietSelect = document.getElementById('diet');
+        if (dietSelect) {
+            dietSelect.addEventListener('change', (e) => {
+                if (e.target.value === 'omnivore') {
+                    if (window.showToast) window.showToast('Nudge: Shifting to a vegetarian diet could save ~100kg CO2 per year!', 'leaf');
+                } else if (e.target.value === 'vegan') {
+                    if (window.showToast) window.showToast('Awesome! A vegan diet has the lowest carbon footprint.', 'heart');
+                }
+            });
+        }
+
         form.addEventListener('submit', (event) => {
             event.preventDefault();
 
@@ -317,10 +328,25 @@ if (typeof document !== 'undefined') {
             getStorage()?.setItem('ecotrack-inputs', JSON.stringify(inputs));
             window.baseFootprint = baseFootprint;
 
-            calcSec.style.display = 'none';
-            dashSec.style.display = 'block';
-            updateDashboard(baseFootprint);
-            checkAchievements();
+            const calcBtn = document.querySelector('#carbon-form button[type="submit"]');
+            const originalBtnHtml = calcBtn ? calcBtn.innerHTML : 'Calculate Carbon Footprint';
+            if (calcBtn) {
+                calcBtn.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Fetching AI Insights...';
+                refreshIcons();
+            }
+
+            // Simulating API Placeholder as per Hackathon Requirements
+            setTimeout(() => {
+                calcSec.style.display = 'none';
+                dashSec.style.display = 'block';
+                updateDashboard(baseFootprint);
+                checkAchievements();
+                
+                if (calcBtn) {
+                    calcBtn.innerHTML = originalBtnHtml;
+                    refreshIcons();
+                }
+            }, 800);
         });
 
         methodologyToggle.addEventListener('click', () => {

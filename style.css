@@ -422,6 +422,13 @@ body.light-mode .hero-score-card {
   align-items: center;
 }
 
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+.spin {
+    animation: spin 1s linear infinite;
+}
+
 .credit-score {
   font-size: 4.5rem;
   font-weight: 900;

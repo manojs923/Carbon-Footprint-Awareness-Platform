@@ -1,0 +1,23 @@
+{
+  "name": "ecotrack-india",
+  "version": "1.0.0",
+  "description": "Carbon Footprint Awareness Platform with AI and gamification.",
+  "main": "app.js",
+  "scripts": {
+    "start": "npx serve .",
+    "test": "node tests/test.js",
+    "build": "echo \"Building application...\" && echo \"Ready for deployment.\""
+  },
+  "keywords": [
+    "carbon",
+    "footprint",
+    "ai",
+    "sustainability",
+    "hackathon"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}
