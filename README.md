@@ -1,94 +1,41 @@
-# 🌍 EcoTrack India — Carbon Footprint Awareness Platform
+# EcoTrack India: Gamified Carbon Intelligence Platform
 
-## 🎯 Challenge Vertical
-Individual Consumers
+**EcoTrack India** is a highly interactive Progressive Web App (PWA) designed to calculate, analyze, and gamify personal carbon footprints for Indian citizens. 
 
-## ✨ Features
-- 🌿 Multi-step personal carbon calculator for home energy, transport, LPG, and diet
-- 📈 Carbon Credit Score out of 850 with animated count-up and tier badge
-- 🟢 Progress gauge showing score strength from red to green
-- 🥧 Scope 1, 2, and 3 donut chart for emissions breakdown
-- 🏙️ City comparison leaderboard with user, city, and India average bars
-- 📜 Detailed GHG accounting table with monthly, annual, and percentage values
-- 🕒 Carbon footprint history stored in `localStorage` with trend insights
-- 📉 Personal history line chart with improvement or worsening indicators
-- 🎉 Dynamic equivalent facts that rotate every 3 seconds
-- 🖼️ Shareable carbon score card generated with the Canvas API
-- 🌗 Dark and light mode with persisted preference
-- 🎯 Weekly climate challenges for habit nudges
-- 🔮 Scenario simulator for EV and solar adoption
-- 🧾 One-click printable PDF report using `window.print()`
-- 🤖 Rule-based AI Carbon Coach for tailored advice
+Live URL: [https://manojs923.github.io/Carbon-Footprint-Awareness-Platform/](https://manojs923.github.io/Carbon-Footprint-Awareness-Platform/)
 
-## 🔬 How It Works
-The calculator collects monthly activity inputs, converts them to kilograms of CO2 using India-specific or globally recognized emission factors, then annualizes the result.
+---
 
-Formula pattern:
-`annual_kg_co2 = monthly_activity × emission_factor × 12`
+## 🎯 Chosen Vertical
+**Persona:** Eco-Awareness & Carbon Footprint Tracking
 
-Examples:
-- Electricity: `monthly_kWh × 0.82 × 12`
-- Petrol: `monthly_litres × 2.31 × 12`
-- Train: `monthly_km × 0.041 × 12`
-- LPG: `monthly_cylinders × 14.2 × 2.98 × 12`
+We chose this vertical to shift the narrative from climate anxiety to actionable, data-driven habits. Standard carbon calculators are often tedious and provide generic advice. EcoTrack India solves this by gamifying the experience and leveraging dynamic AI for localized context.
 
-The annual category totals are added together and converted to tonnes:
-`total_tonnes = total_annual_kg / 1000`
+---
 
-The Carbon Credit Score then uses:
-`score = Math.round(Math.max(0, 850 - (userTonnes / 1.9 * 425)))`
+## 🚀 Approach and Logic
+Our approach focused on zero-dependency, lightning-fast architecture. The platform was built entirely with HTML, CSS (Glassmorphism), and Vanilla JavaScript to ensure maximum efficiency.
 
-## 📊 Scope 1/2/3 Mapping
-| Input | Scope | Why |
-|------|------|------|
-| Petrol Vehicle | Scope 1 | Direct fuel combustion by the individual |
-| LPG Cooking | Scope 1 | Direct household fuel use |
-| Electricity | Scope 2 | Purchased grid electricity |
-| Train Travel | Scope 3 | Indirect public transport emissions |
-| Diet | Scope 3 | Indirect upstream food-system emissions |
+### Logic Flow:
+1. **Data Collection:** Collects user inputs across Transport (Scope 1/3), Home Energy (Scope 2), and Diet/Waste (Scope 3).
+2. **Algorithm Processing:** Applies localized Indian emission factors. For example, electricity calculation inherently depends on the chosen State, acknowledging that coal-heavy states have a different grid emission factor than high-renewable states.
+3. **Scoring:** The total footprint (in tonnes) is mathematically inverted and scaled to generate a "Carbon Credit Score" (0-850), mimicking a financial credit score.
+4. **Insights:** AI logic maps the highest emission category (e.g., Petrol) to an array of specific, personalized mitigation strategies.
 
-## 🇮🇳 India-Specific Data
-- Electricity grid factor: `0.82 kg CO2/kWh` from India CEA 2023 grid average
-- Petrol factor: `2.31 kg CO2/litre`
-- LPG factor: `2.98 kg CO2/kg`
-- Train factor: `0.041 kg CO2/km`
-- India average annual footprint benchmark: `1.9 tonnes/year`
-- City benchmark set includes Bengaluru, Mumbai, Delhi, Chennai, Hyderabad, Kolkata, Pune, Ahmedabad, Jaipur, and Surat
+---
 
-## 🚀 How to Run
-Just open `index.html` in any browser. No installation needed.
+## ⚙️ How the Solution Works
+1. **Progressive Web App (PWA):** Users can install the app to their home screens. A Service Worker (`sw.js`) caches all assets for instant offline loading.
+2. **First-Visit Onboarding:** A custom JS engine triggers a 5-step tour that darkens the screen and highlights critical UI components (Score, Equivalents, Charts, Benchmarks, Share) for new users.
+3. **Dynamic AI Carbon Coach:** Users interact with a floating chat bubble. Clicking "Get Personalized Tips" analyzes their exact breakdown and outputs 3 highly specific strategies based on their worst-performing category.
+4. **Gamification:** Features a live social proof counter, unlockable achievement badges, and interactive sliders to simulate switching to EVs or Solar.
+5. **Progress Persistence:** Calculates are saved to `localStorage`. Returning users are greeted with a dismissible banner showing their last score and allowing them to instantly view their past dashboard.
+6. **Canvas Share Card:** Users can download a premium, Apple-Wallet style Carbon Card generated purely via the HTML5 Canvas API, complete with a custom QR code placeholder for social sharing.
 
-## 🧪 Testing
-Run: `node tests/test.js`
+---
 
-## 📐 Architecture
-```text
-[User Inputs]
-      |
-      v
-[Vanilla HTML/CSS/JS UI]
-      |
-      v
-[Emission Factor Engine]
-      |
-      +--> [Scope 1/2/3 Charts]
-      +--> [Credit Score + Facts]
-      +--> [History + localStorage]
-      +--> [Canvas Share Card]
-      |
-      v
-[Print / Export / Coaching Experience]
-```
-
-## ⚠️ Assumptions
-- Users provide average monthly behaviour, not daily logs.
-- LPG cylinders are standard domestic `14.2 kg` cylinders.
-- Diet emissions are simplified monthly proxies to keep the form low-friction.
-- Train travel is used as the primary public transport proxy.
-- City averages are benchmarking values for comparison, not regulatory inventories.
-- The India annual comparison baseline is `1.9 tonnes/year`.
-
-## 📜 Data Sources
-- India CEA 2023 Grid Emission Factor: 0.82 kg CO2/kWh
-- IPCC AR6 dietary emission estimates
-- MoRTH India vehicle fuel efficiency data
+## 🤔 Assumptions Made
+1. **Emission Factors:** We assumed standardized average emission factors for India (e.g., Petrol = 0.21 kg CO2/km, average grid factor = ~0.71 kg CO2/kWh) and utilized approximations for the State-level grid factors.
+2. **Average Benchmarks:** The India national average is assumed to be 1.9 tonnes per capita, based on recent global averages. City benchmarks (e.g., Bengaluru, Mumbai) are estimated relative baselines for the sake of the leaderboard chart logic.
+3. **Local Storage:** We assume the user is accessing the app from a personal device where `localStorage` is enabled, allowing us to persist their data securely without a backend database.
+4. **PWA Support:** We assume the user is running a modern browser (Chrome, Safari, Edge) capable of supporting Service Workers and HTML5 Canvas APIs.
